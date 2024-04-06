@@ -1,4 +1,5 @@
-﻿using appLauncher.Core.Helpers;
+﻿using appLauncher.Core.CustomEvent;
+using appLauncher.Core.Helpers;
 using appLauncher.Core.Model;
 
 using Microsoft.Toolkit.Uwp.UI.Controls;
@@ -11,6 +12,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -23,6 +25,7 @@ namespace appLauncher.Core.Pages
     {
         public static List<FinalTiles> tiles = new List<FinalTiles>();
         public static List<AppFolder> appFolders = new List<AppFolder>();
+        public static int numOfPages = 1;
         DispatcherTimer searchDelay = new DispatcherTimer();
         public string searchText = string.Empty;
         public string previousSearchText = string.Empty;
@@ -30,6 +33,10 @@ namespace appLauncher.Core.Pages
         public int updateTimeer = 1500;
         public static Frame navFrame { get; set; }
         public static InAppNotification showMessage { get; set; }
+
+        private int _currentPage = 0;
+        private int _numofPages = 0;
+        public static event PageChangedDelegate pageChanged;
         public FirstPage()
         {
             this.InitializeComponent();
@@ -37,6 +44,22 @@ namespace appLauncher.Core.Pages
             searchDelay.Tick += SearchDelay_Tick;
             searchDelay.Interval = TimeSpan.FromMilliseconds(100);
             NavFrame.Navigate(typeof(AppLoading));
+            MainPage.numofPagesChanged += SetupPageIndicators;
+            PackageHelper.pageVariables = new PageChangingVariables();
+            pageChanged += FirstPage_pageChanged;
+
+        }
+
+        private void FirstPage_pageChanged(PageChangedEventArgs e)
+        {
+            _currentPage = e.PageIndex;
+            PackageHelper.pageVariables.IsPrevious = e.PageIndex > 0;
+            PackageHelper.pageVariables.IsNext = e.PageIndex < _numofPages - 1;
+            Bindings.Update();
+        }
+
+        private void MainPage_pageChanged(PageChangedEventArgs e)
+        {
 
         }
 
@@ -105,7 +128,119 @@ namespace appLauncher.Core.Pages
             PackageHelper.Apps.Search(searchText);
 
         }
+        private void SetupPageIndicators(PageNumChangedArgs e)
+        {
+            _numofPages = e.numofpages;
+            PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
+            PackageHelper.pageVariables.IsNext = _currentPage < _numofPages - 1;
 
+            Bindings.Update();
+        }
+
+        private void El_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            int selindex = (int)((Ellipse)sender).Tag;
+
+
+
+
+
+            //int itemscount = listView.Items.Count;
+
+            //if (firstrun && listView.Items.Count > 0)
+            //{
+            //    listView.Items.Clear();
+            //    for (int i = 0; i < e.numofpages; i++)
+            //    {
+            //        Ellipse el = new Ellipse
+            //        {
+            //            Tag = i,
+            //            Height = 8,
+            //            Width = 8,
+            //            Margin = new Thickness(12),
+            //            Fill = new SolidColorBrush(Colors.Gray),
+
+            //        };
+            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
+            //        listView.Items.Add(el);
+            //    }
+            //}
+            //else if (firstrun && listView.Items.Count == 0)
+            //{
+            //    for (int i = 0; i < e.numofpages; i++)
+            //    {
+            //        Ellipse el = new Ellipse
+            //        {
+            //            Tag = i,
+            //            Height = 8,
+            //            Width = 8,
+            //            Margin = new Thickness(12),
+            //            Fill = new SolidColorBrush(Colors.Gray),
+
+            //        };
+            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
+            //        listView.Items.Add(el);
+            //    }
+            //}
+            //else
+            //{
+            //    if (itemscount > e.numofpages)
+            //    {
+            //        for (int i = 0; i < itemscount; i++)
+            //        {
+            //            if (i > e.numofpages)
+            //            {
+            //                listView.Items.RemoveAt(i);
+            //            }
+
+            //        }
+
+
+            //    }
+            //    else if (itemscount < e.numofpages)
+            //    {
+            //        int addto = itemscount;
+            //        for (int i = 0; i < e.numofpages; i++)
+            //        {
+            //            if (i == itemscount && itemscount == 0)
+            //            {
+            //                Ellipse el = new Ellipse
+            //                {
+            //                    Tag = i,
+            //                    Height = 8,
+            //                    Width = 8,
+            //                    Margin = new Thickness(12),
+            //                    Fill = new SolidColorBrush(Colors.Gray),
+
+            //                };
+            //                ToolTipService.SetToolTip(el, $"Page {i}");
+            //                listView.Items.Add(el);
+            //            }
+            //            else
+            //            {
+            //                if (i <= itemscount)
+            //                {
+            //                    continue;
+            //                }
+            //                Ellipse el = new Ellipse
+            //                {
+            //                    Tag = i,
+            //                    Height = 8,
+            //                    Width = 8,
+            //                    Margin = new Thickness(12),
+            //                    Fill = new SolidColorBrush(Colors.Gray),
+            //                };
+            //                addto += 1;
+            //                ToolTipService.SetToolTip(el, $"Page {addto}");
+            //                listView.Items.Add(el);
+            //            }
+            //        }
+            //    }
+            //}
+            //buttonssetup = true;
+            //GC.WaitForPendingFinalizers();
+            //this.InvalidateArrange();
+        }
         private void CreateSpecialFolder_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ((FontIcon)sender).ContextFlyout.ShowAt((FontIcon)sender);
@@ -125,6 +260,7 @@ namespace appLauncher.Core.Pages
                     navFrame.Navigate(typeof(RemoveApps));
                     break;
                 default:
+                    showMessage.Show("Did not select install or remove and app", 1500);
                     break;
             }
         }
@@ -158,21 +294,36 @@ namespace appLauncher.Core.Pages
             }
             switch (((MenuFlyoutItem)sender).Tag)
             {
+                case "new":
+                    navFrame.Navigate(typeof(CreateFolders));
+                    break;
+                case "remove":
+                    navFrame.Navigate(typeof(RemoveFolder));
+                    break;
                 case "favorite":
-                    if (AnyFavorites())
+                    if (!PackageHelper.Apps.GetOriginalCollection().Any(x => x.Name == "Favorites"))
                     {
-                        AppFolder folder = new AppFolder()
+                        if (AnyFavorites())
                         {
-                            Name = "Favorites",
-                            Description = "Favorited apps",
-                            ListPos = PackageHelper.Apps.GetOriginalCollection().Count - 1,
-                            InstalledDate = System.DateTime.Now
-                        };
+                            AppFolder folder = new AppFolder()
+                            {
+                                Name = "Favorites",
+                                Description = "Favorited apps",
+                                ListPos = PackageHelper.Apps.GetOriginalCollection().Count - 1,
+                                InstalledDate = System.DateTime.Now
+                            };
 
-                        PackageHelper.Apps.AddFolder(folder);
-                        PackageHelper.Apps.RecalculateThePageItems();
-                        break;
+                            PackageHelper.Apps.AddFolder(folder);
+                            PackageHelper.Apps.RecalculateThePageItems();
+                            break;
+                        }
                     }
+                    else
+                    {
+                        AppFolder favorite = (AppFolder)PackageHelper.Apps.GetOriginalCollection().First(x => x.Name == "Favorites");
+                        navFrame.Navigate(typeof(FolderView), favorite);
+                    }
+
                     showMessage.Show("No apps selected as favorite", 2000);
                     break;
                 case "used":
@@ -225,6 +376,39 @@ namespace appLauncher.Core.Pages
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             showMessage = Inapp;
+            PackageHelper.pageVariables.IsNext = _currentPage < (_numofPages - 1);
+            PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
+        }
+
+        private void NextPage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (PackageHelper.pageVariables.IsNext)
+            {
+                pageChanged?.Invoke(new PageChangedEventArgs(_currentPage + 1));
+            }
+        }
+
+        private void PreviousPage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (PackageHelper.pageVariables.IsPrevious)
+            {
+                pageChanged?.Invoke(new PageChangedEventArgs(_currentPage - 1));
+            }
+        }
+
+        private void NewFolder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void RemoveFolder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void listView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
         }
     }
 }

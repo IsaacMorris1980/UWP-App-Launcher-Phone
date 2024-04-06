@@ -30,6 +30,7 @@ namespace appLauncher.Core.Model
             SearchList = new ObservableCollection<IApporFolder>(collection);
             MainPage.pageChanged += PageChanged;
             MainPage.pageSizeChanged += SizedChanged;
+            FirstPage.pageChanged += PageChanged;
         }
         public void RecalculateThePageItems()
         {
@@ -250,7 +251,7 @@ namespace appLauncher.Core.Model
             foreach (AppFolder item in removeappfromfolder)
             {
                 folderapps = new ObservableCollection<FinalTiles>(removeapp.Where(x => x.FolderName == item.Name).ToList());
-                item.FolderApps = folderapps;
+                item.FolderApps = folderapps.ToList();
                 finallist.Add(item);
             }
             finallist.AddRange(removeapp);
@@ -261,7 +262,7 @@ namespace appLauncher.Core.Model
         public void Removefolder(AppFolder folder)
         {
             List<IApporFolder> finallist = new List<IApporFolder>();
-            ObservableCollection<FinalTiles> folderapps = new ObservableCollection<FinalTiles>();
+            List<FinalTiles> folderapps = new List<FinalTiles>();
             List<FinalTiles> removeapp = originalCollection.OfType<FinalTiles>().ToList();
             List<AppFolder> removeappfromfolder = originalCollection.OfType<AppFolder>().ToList();
 

@@ -15,7 +15,7 @@
     PointerEntered="Page_PointerEntered">
      <Page.Resources>
          <DataTemplate x:Key="FolderTemplate" x:DataType="models:AppFolder">
-            <RelativePanel Width="64" Height="84" Margin="15" Background="Blue">
+            <RelativePanel Width="64" Height="84" Margin="12" Background="Blue">
                        <Canvas x:Name="Logo" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" Width="50" Height="50" Background="{x:Bind BackBrush}" />
                         <TextBlock Name="appName" Text="{x:Bind Name}" 
                     FontSize="12" 
@@ -30,7 +30,7 @@
             </RelativePanel>
         </DataTemplate>
         <DataTemplate x:Key="AppTemplate" x:DataType="models:FinalTiles">
-            <RelativePanel Width="64" Height="84" Margin="15" RightTapped="RelativePanel_RightTapped">
+            <RelativePanel Width="64" Height="84" Margin="12" RightTapped="RelativePanel_RightTapped">
                <Canvas x:Name="AppLogo" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" Width="50" Height="50" Background="{x:Bind LogoBrush}" />
                 <TextBlock Name="appName" Text="{x:Bind Name}" 
              FontSize="12" 
@@ -55,7 +55,7 @@
          Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="100" />
+              
             </Grid.RowDefinitions>
           
              <GridView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" PointerWheelChanged="GridViewMain_PointerWheelChanged" x:Name="GridViewMain"  Margin="45,0,45,0" Padding="12" CanDrag="True" CanDragItems="True" AllowDrop="True" DragOver="GridViewMain_DragOver" IsItemClickEnabled="True" DragItemsStarting="GridViewMain_DragItemsStarting" Drop="GridViewMain_Drop" ItemClick="GridViewMain_ItemClick"
@@ -63,54 +63,33 @@
                       ItemsSource="{x:Bind helper:PackageHelper.Apps}"
                        Loaded="GridViewMain_Loaded" MinWidth="480" MinHeight="800"
                        SizeChanged="GridViewMain_SizeChanged"
+                       BorderThickness="2"
+                       BorderBrush="Orange"
                       
                  />
 
-            
-                 
-            <RelativePanel Grid.Row="1" HorizontalAlignment="Stretch" 
-                            >
-                <Grid x:Name="bottomdrawer" RelativePanel.AlignTopWithPanel="True">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="50" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                        <RowDefinition Height="60" />
-                        <RowDefinition Height="50" />
-                    </Grid.RowDefinitions>
-                        <FontIcon x:Name="PreviousPage" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" Tapped="PreviousPage_Tapped"
-                                      ToolTipService.ToolTip="Navigate to previous page if available"  Grid.Column="0"
-                                      Grid.Row="0"
-                                    />
-                    
-                        <ListView x:Name="listView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+
+
+
+
+
+            <!--<ListView x:Name="listView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                   ScrollViewer.HorizontalScrollBarVisibility="Visible"
                                   ScrollViewer.IsHorizontalRailEnabled="True"
                                   ScrollViewer.HorizontalScrollMode="Auto"
                                   ScrollViewer.VerticalScrollMode="Disabled"
                                   VerticalAlignment="Top"
-                                  Grid.Column="1"
-                                 Grid.Row="0"
                                   ItemClick="listView_ItemClick"
+                                      Grid.Row="1"
                                   >
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>-->
 
-                        </ListView>
-                    <FontIcon x:Name="NextPage" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" Tapped="PreviousPage_Tapped"
-               ToolTipService.ToolTip="Navigate to next page if available"  Grid.Column="2"
-               Grid.Row="0"
-             />
-                    <controls:InAppNotification x:Name="Inapp" Grid.Row="1" Grid.ColumnSpan="3" x:FieldModifier="public" />
-                </Grid>
-                
-            </RelativePanel>
-            </Grid>
+        </Grid>
        
 
 

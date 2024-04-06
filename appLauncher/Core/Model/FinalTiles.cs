@@ -335,6 +335,10 @@ namespace appLauncher.Core.Model
                 SetProperty(ref _launcedcount, value);
             }
         }
+        public async Task<bool> Launch()
+        {
+            return await Entry.LaunchAsync();
+        }
 
 
     }

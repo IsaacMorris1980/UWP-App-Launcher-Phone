@@ -29,7 +29,7 @@ namespace appLauncher.Core.Helpers
 
         public static event EventHandler AppsRetreived;
         public static FinalTiles CurrentWorkingTile { get; set; }
-        public static PageChangingVariables pageVariables { get; set; } = new PageChangingVariables();
+        public static PageChangingVariables pageVariables { get; set; }
 
 
         public static async Task<bool> IsFilePresent(string fileName, string folderPath = "")

@@ -41,24 +41,13 @@ namespace appLauncher.Core.Pages
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             FinalTiles selecteditem = (FinalTiles)AppsinFolders.SelectedItem;
-            await PackageHelper.LaunchApp(selecteditem.FullName);
+            await selecteditem.Launch();
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             displayfolder = (AppFolder)e.Parameter;
         }
 
-        private void MainPage_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            threadPoolTimer.Cancel();
-            Frame.Navigate(typeof(MainPage));
-        }
-        private void AppBarButton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            threadPoolTimer.Cancel();
-            Frame.Navigate(typeof(AboutPage));
-
-        }
 
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -78,7 +67,7 @@ namespace appLauncher.Core.Pages
                 {
                     nonorderedtiles[i].FolderListPos = i;
                 }
-                displayfolder.FolderApps = new System.Collections.ObjectModel.ObservableCollection<FinalTiles>(nonorderedtiles.OrderBy(x => x.FolderListPos).ToList());
+                displayfolder.FolderApps = new List<FinalTiles>(nonorderedtiles.OrderBy(x => x.FolderListPos).ToList());
             }
             if (displayfolder.Name == "Most Used")
             {
@@ -94,7 +83,7 @@ namespace appLauncher.Core.Pages
                 {
                     nonorderedlist[i].FolderListPos = i;
                 }
-                displayfolder.FolderApps = new System.Collections.ObjectModel.ObservableCollection<FinalTiles>(nonorderedlist.OrderBy(x => x.FolderListPos).ToList());
+                displayfolder.FolderApps = new List<FinalTiles>(nonorderedlist.OrderBy(x => x.FolderListPos).ToList());
 
             }
             if (displayfolder.FolderApps.Count == 0)
