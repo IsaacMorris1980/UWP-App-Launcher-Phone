@@ -54,10 +54,10 @@
         <Grid Name="AppListViewGrid"
          Visibility="Visible">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-              
+                <RowDefinition />
+                <RowDefinition Height="50" />
             </Grid.RowDefinitions>
-          
+         
              <GridView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" PointerWheelChanged="GridViewMain_PointerWheelChanged" x:Name="GridViewMain"  Margin="45,0,45,0" Padding="12" CanDrag="True" CanDragItems="True" AllowDrop="True" DragOver="GridViewMain_DragOver" IsItemClickEnabled="True" DragItemsStarting="GridViewMain_DragItemsStarting" Drop="GridViewMain_Drop" ItemClick="GridViewMain_ItemClick"
                         ItemTemplateSelector="{StaticResource ApporFolderSelector}"
                       ItemsSource="{x:Bind helper:PackageHelper.Apps}"
@@ -72,22 +72,6 @@
 
 
 
-
-            <!--<ListView x:Name="listView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                  ScrollViewer.IsHorizontalRailEnabled="True"
-                                  ScrollViewer.HorizontalScrollMode="Auto"
-                                  ScrollViewer.VerticalScrollMode="Disabled"
-                                  VerticalAlignment="Top"
-                                  ItemClick="listView_ItemClick"
-                                      Grid.Row="1"
-                                  >
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>-->
 
         </Grid>
        

@@ -28,8 +28,9 @@ namespace appLauncher.Core.Pages
             FirstPage.appFolders = PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().ToList();
             FirstPage.tiles = PackageHelper.Apps.GetOriginalCollection().OfType<FinalTiles>().ToList();
 
-            FirstPage.navFrame.Navigate(typeof(MainPage), PackageHelper.AllApps);
+            FirstPage.navFrame.Navigate(typeof(MainPage));
             FirstPage.navFrame.BackStack.RemoveAt(0);
+
         }
 
         private async void PackageHelper_AppsRetreived(object sender, EventArgs e)

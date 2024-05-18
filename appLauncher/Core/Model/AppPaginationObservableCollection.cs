@@ -137,6 +137,11 @@ namespace appLauncher.Core.Model
             originalCollection.Move(initailindex, newindex);
             RecalculateThePageItems();
         }
+        public void ChangePage(int page)
+        {
+            _selectedPage = page;
+            RecalculateThePageItems();
+        }
         public void GetFilteredApps(string selected)
         {
 

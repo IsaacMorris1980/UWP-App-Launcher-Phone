@@ -95,7 +95,7 @@ namespace appLauncher.Core.Pages
             try
             {
                 // pageChanged += new PageChangedDelegate(UpdateIndicator);
-                numofPagesChanged += new PageNumChangedDelegate(SetupPageIndicators);
+                //     numofPagesChanged += new PageNumChangedDelegate(SetupPageIndicators);
                 pageSizeChanged += MainPage_pageSizeChanged;
                 this.InitializeComponent();
                 this.SizeChanged += MainPage_SizeChanged;
@@ -258,106 +258,106 @@ namespace appLauncher.Core.Pages
             await this.Scale(2f, 2f, (float)this.ActualWidth / 2, (float)this.ActualHeight / 2, 0).StartAsync();
             await this.Scale(1, 1, (float)this.ActualWidth / 2, (float)this.ActualHeight / 2, 300).StartAsync();
         }
-        private void SetupPageIndicators(PageNumChangedArgs e)
-        {
-            _numOfPages = e.numofpages;
-            Bindings.Update();
-            //int itemscount = listView.Items.Count;
-            //FirstPage.numOfPages = e.numofpages;
-            //if (firstrun && listView.Items.Count > 0)
-            //{
-            //    listView.Items.Clear();
-            //    for (int i = 0; i < e.numofpages; i++)
-            //    {
-            //        Ellipse el = new Ellipse
-            //        {
-            //            Tag = i,
-            //            Height = 8,
-            //            Width = 8,
-            //            Margin = new Thickness(12),
-            //            Fill = new SolidColorBrush(Colors.Gray),
+        //private void SetupPageIndicators(PageNumChangedArgs e)
+        //{
+        //    _numOfPages = e.numofpages;
+        //    Bindings.Update();
+        //    int itemscount = listView.Items.Count;
+        //    FirstPage.numOfPages = e.numofpages;
+        //    if (firstrun && listView.Items.Count > 0)
+        //    {
+        //        listView.Items.Clear();
+        //        for (int i = 0; i < e.numofpages; i++)
+        //        {
+        //            Ellipse el = new Ellipse
+        //            {
+        //                Tag = i,
+        //                Height = 8,
+        //                Width = 8,
+        //                Margin = new Thickness(12),
+        //                Fill = new SolidColorBrush(Colors.Gray),
 
-            //        };
-            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
-            //        listView.Items.Add(el);
-            //    }
-            //}
-            //else if (firstrun && listView.Items.Count == 0)
-            //{
-            //    for (int i = 0; i < e.numofpages; i++)
-            //    {
-            //        Ellipse el = new Ellipse
-            //        {
-            //            Tag = i,
-            //            Height = 8,
-            //            Width = 8,
-            //            Margin = new Thickness(12),
-            //            Fill = new SolidColorBrush(Colors.Gray),
+        //            };
+        //            ToolTipService.SetToolTip(el, $"Page {i + 1}");
+        //            listView.Items.Add(el);
+        //        }
+        //    }
+        //    else if (firstrun && listView.Items.Count == 0)
+        //    {
+        //        for (int i = 0; i < e.numofpages; i++)
+        //        {
+        //            Ellipse el = new Ellipse
+        //            {
+        //                Tag = i,
+        //                Height = 8,
+        //                Width = 8,
+        //                Margin = new Thickness(12),
+        //                Fill = new SolidColorBrush(Colors.Gray),
 
-            //        };
-            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
-            //        listView.Items.Add(el);
-            //    }
-            //}
-            //else
-            //{
-            //    if (itemscount > e.numofpages)
-            //    {
-            //        for (int i = 0; i < itemscount; i++)
-            //        {
-            //            if (i > e.numofpages)
-            //            {
-            //                listView.Items.RemoveAt(i);
-            //            }
+        //            };
+        //            ToolTipService.SetToolTip(el, $"Page {i + 1}");
+        //            listView.Items.Add(el);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (itemscount > e.numofpages)
+        //        {
+        //            for (int i = 0; i < itemscount; i++)
+        //            {
+        //                if (i > e.numofpages)
+        //                {
+        //                    listView.Items.RemoveAt(i);
+        //                }
 
-            //        }
+        //            }
 
 
-            //    }
-            //    else if (itemscount < e.numofpages)
-            //    {
-            //        int addto = itemscount;
-            //        for (int i = 0; i < e.numofpages; i++)
-            //        {
-            //            if (i == itemscount && itemscount == 0)
-            //            {
-            //                Ellipse el = new Ellipse
-            //                {
-            //                    Tag = i,
-            //                    Height = 8,
-            //                    Width = 8,
-            //                    Margin = new Thickness(12),
-            //                    Fill = new SolidColorBrush(Colors.Gray),
+        //        }
+        //        else if (itemscount < e.numofpages)
+        //        {
+        //            int addto = itemscount;
+        //            for (int i = 0; i < e.numofpages; i++)
+        //            {
+        //                if (i == itemscount && itemscount == 0)
+        //                {
+        //                    Ellipse el = new Ellipse
+        //                    {
+        //                        Tag = i,
+        //                        Height = 8,
+        //                        Width = 8,
+        //                        Margin = new Thickness(12),
+        //                        Fill = new SolidColorBrush(Colors.Gray),
 
-            //                };
-            //                ToolTipService.SetToolTip(el, $"Page {i}");
-            //                listView.Items.Add(el);
-            //            }
-            //            else
-            //            {
-            //                if (i <= itemscount)
-            //                {
-            //                    continue;
-            //                }
-            //                Ellipse el = new Ellipse
-            //                {
-            //                    Tag = i,
-            //                    Height = 8,
-            //                    Width = 8,
-            //                    Margin = new Thickness(12),
-            //                    Fill = new SolidColorBrush(Colors.Gray),
-            //                };
-            //                addto += 1;
-            //                ToolTipService.SetToolTip(el, $"Page {addto}");
-            //                listView.Items.Add(el);
-            //            }
-            //        }
-            //    }
-            //}
-            //buttonssetup = true;
-            //GC.WaitForPendingFinalizers();
-            //this.InvalidateArrange();
-        }
+        //                    };
+        //                    ToolTipService.SetToolTip(el, $"Page {i}");
+        //                    listView.Items.Add(el);
+        //                }
+        //                else
+        //                {
+        //                    if (i <= itemscount)
+        //                    {
+        //                        continue;
+        //                    }
+        //                    Ellipse el = new Ellipse
+        //                    {
+        //                        Tag = i,
+        //                        Height = 8,
+        //                        Width = 8,
+        //                        Margin = new Thickness(12),
+        //                        Fill = new SolidColorBrush(Colors.Gray),
+        //                    };
+        //                    addto += 1;
+        //                    ToolTipService.SetToolTip(el, $"Page {addto}");
+        //                    listView.Items.Add(el);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    buttonssetup = true;
+        //    GC.WaitForPendingFinalizers();
+        //    this.InvalidateArrange();
+        //}
 
         private void Btn_Tapped(object sender, TappedRoutedEventArgs e)
         {

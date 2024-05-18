@@ -1,9 +1,10 @@
 ﻿using appLauncher.Core.Helpers;
 using appLauncher.Core.Pages;
 
-
+using Newtonsoft.Json;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel;
@@ -41,27 +42,52 @@ namespace appLauncher
 
         }
 
-        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            //    Dictionary<string, string> result = new Dictionary<string, string>();
-            //    result.Add("UnhandedExceptionmessage", e.Exception.Message);
-            //    result.Add("StackTrace", e.Exception.StackTrace);
-            //    result.Add("TargetSite", e.Exception.TargetSite.Name);
-            //    result.Add("ExceptionSource", e.Exception.Source);
-            //    result.AddRange((IEnumerable<KeyValuePair<string, string>>)e.Exception.Data);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            result.Add("UnhandedExceptionmessage", e.Exception.Message);
+            result.Add("StackTrace", e.Exception.StackTrace);
+            result.Add("ExceptionSource", e.Exception.Source);
+            result.Add("More Data", e.Exception.Data.ToString());
+
+            try
+            {
+
+                string saveappsstring = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                StorageFile appsFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("backgroundunhandlederrors.json", CreationCollisionOption.OpenIfExists);
+                await FileIO.WriteTextAsync(appsFile, saveappsstring);
+
+
+            }
+            catch (Exception es)
+            {
+
+            }
 
         }
 
-        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        private async void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            //Dictionary<string, string> result = new Dictionary<string, string>();
-            //result.Add("Unhandedmessage", e.Message);
-            //result.Add("UnhandedExceptionmessage", e.Exception.Message);
-            //result.Add("StackTrace", e.Exception.StackTrace);
-            //result.Add("TargetSite", e.Exception.TargetSite.Name);
-            //result.Add("ExceptionSource", e.Exception.Source);
-            //result.AddRange((IEnumerable<KeyValuePair<string, string>>)e.Exception.Data);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            result.Add("UnhandedExceptionmessage", e.Exception.Message);
+            result.Add("StackTrace", e.Exception.StackTrace);
+            result.Add("ExceptionSource", e.Exception.Source);
+            result.Add("More Data", e.Exception.Data.ToString());
+            try
+            {
 
+                string saveappsstring = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                StorageFile appsFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("unhandlederrors.json", CreationCollisionOption.OpenIfExists);
+                await FileIO.WriteTextAsync(appsFile, saveappsstring);
+
+
+            }
+            catch (Exception es)
+            {
+
+            }
         }
 
 

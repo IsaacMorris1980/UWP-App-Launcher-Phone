@@ -7,9 +7,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:helper="using:appLauncher.Core.Helpers"
      xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:ucontrols="using:appLauncher.Core.UserControls"
+   xmlns:models="using:appLauncher.Core.Model"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="Page_Loaded">
+    Loaded="Page_Loaded"
+    SizeChanged="Page_SizeChanged">
+    <Page.Resources>
+        <ControlTemplate x:Key="ellbutton" TargetType="Button">
+            <DataTemplate x:DataType="models:PageIndicators">
+                <Ellipse Width="13" Height="13" ToolTipService.ToolTip="{x:Bind Tip}" Fill="{x:Bind FillColor}" />
+            </DataTemplate>
+        </ControlTemplate>
+    </Page.Resources>
 
     <Grid>
         <SplitView x:Name="MainNavigation"
@@ -86,32 +96,38 @@
             </SplitView.Pane>
             <SplitView.Content>
                 
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Frame x:Name="NavFrame"   />
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" >
-                            <FontIcon />
-                            <ListView x:Name="listView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="50" />
+                    </Grid.RowDefinitions>
+                        <Frame x:Name="NavFrame" Grid.Row="0"  />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" Grid.Row="1" >
+                        <FontIcon />
+                        <ListView x:Name="listView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                   ScrollViewer.HorizontalScrollBarVisibility="Visible"
                                   ScrollViewer.IsHorizontalRailEnabled="True"
                                   ScrollViewer.HorizontalScrollMode="Auto"
                                   ScrollViewer.VerticalScrollMode="Disabled"
-                                  VerticalAlignment="Top"
-                                  Grid.Column="1"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Stretch"
+                                  
                                  
-                                  ItemClick="listView_ItemClick"
-                                  >
-                                <ListView.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ListView.ItemsPanel>
-
-                            </ListView>
-                            <FontIcon />
-                        </StackPanel>
-                        <controls:InAppNotification  x:Name="Inapp"  Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" x:Load="False" />
+                              >
+                            <ListView.Resources>
+                                <DataTemplate x:Key="PageButtons">
+                                    <ucontrols:EllipseButton />
+                                </DataTemplate>
+                            </ListView.Resources>
+                            <ListView.ItemTemplate>
+                                <StaticResource ResourceKey="PageButtons" />
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <FontIcon />
+                       
                     </StackPanel>
+                    <controls:InAppNotification Grid.Row="1"  x:Name="Inapp"  Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"  />
+                  
                 </Grid>
             </SplitView.Content>
         </SplitView>

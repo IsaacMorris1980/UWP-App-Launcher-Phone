@@ -6,13 +6,13 @@ using Microsoft.Toolkit.Uwp.UI.Controls;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -31,12 +31,17 @@ namespace appLauncher.Core.Pages
         public string previousSearchText = string.Empty;
         public int currentTimeLeft = 0;
         public int updateTimeer = 1500;
+        public static ObservableCollection<PageIndicators> pages = new ObservableCollection<PageIndicators>();
         public static Frame navFrame { get; set; }
         public static InAppNotification showMessage { get; set; }
+        public static SplitView firstView { get; set; }
 
         private int _currentPage = 0;
         private int _numofPages = 0;
+        private bool buttonssetup;
+
         public static event PageChangedDelegate pageChanged;
+        public static event PageNumChangedDelegate pageNumChanged;
         public FirstPage()
         {
             this.InitializeComponent();
@@ -47,8 +52,10 @@ namespace appLauncher.Core.Pages
             MainPage.numofPagesChanged += SetupPageIndicators;
             PackageHelper.pageVariables = new PageChangingVariables();
             pageChanged += FirstPage_pageChanged;
-
+            pageNumChanged += SetupPageIndicators;
         }
+
+
 
         private void FirstPage_pageChanged(PageChangedEventArgs e)
         {
@@ -130,16 +137,43 @@ namespace appLauncher.Core.Pages
         }
         private void SetupPageIndicators(PageNumChangedArgs e)
         {
+
+            listView.Items.Clear();
             _numofPages = e.numofpages;
-            PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
-            PackageHelper.pageVariables.IsNext = _currentPage < _numofPages - 1;
+            pages.Clear();
+            for (int i = 0; i < _numofPages; i++)
+            {
+                PageIndicators pi = new PageIndicators()
+                {
+                    PageNum = i,
+                };
+                pi.Selected = false;
+                pages.Add(pi);
+                listView.Items.Add(i);
+            }
+
+            //foreach (int item in e.numofpages)
+            //{
+            //    PageIndicators pi = new PageIndicators()
+            //    {
+            //        PageNum = item-1,
+            //        DisplayPageNum 
+            //    };
+            //    pi.Selected = true;
+
+            //    listView.Items.Add(pi);
+            //}
+            pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
 
             Bindings.Update();
+
+            showMessage.Show(listView.Items.Count().ToString(), 1000);
+            // buttonssetup = true;
         }
 
         private void El_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            int selindex = (int)((Ellipse)sender).Tag;
+            //int selindex = (int)((Ellipse)sender).Tag;
 
 
 
@@ -147,10 +181,10 @@ namespace appLauncher.Core.Pages
 
             //int itemscount = listView.Items.Count;
 
-            //if (firstrun && listView.Items.Count > 0)
+            //if (listView.Items.Count > 0)
             //{
             //    listView.Items.Clear();
-            //    for (int i = 0; i < e.numofpages; i++)
+            //    for (int i = 0; i < numOfPages; i++)
             //    {
             //        Ellipse el = new Ellipse
             //        {
@@ -165,7 +199,7 @@ namespace appLauncher.Core.Pages
             //        listView.Items.Add(el);
             //    }
             //}
-            //else if (firstrun && listView.Items.Count == 0)
+            //else if (listView.Items.Count == 0)
             //{
             //    for (int i = 0; i < e.numofpages; i++)
             //    {
@@ -195,6 +229,16 @@ namespace appLauncher.Core.Pages
 
             //        }
 
+            //        Button test = new Button();
+            //        test.Template = new ControlTemplate();
+            //        ControlTemplate temp = new ControlTemplate();
+            //        Ellipse elipse = new Ellipse
+            //        {
+            //            Width = 8,
+            //            Height = 8,
+            //            Fill = Colors.Gray,
+            //            Tag = i,
+            //        };
 
             //    }
             //    else if (itemscount < e.numofpages)
@@ -237,7 +281,7 @@ namespace appLauncher.Core.Pages
             //        }
             //    }
             //}
-            //buttonssetup = true;
+
             //GC.WaitForPendingFinalizers();
             //this.InvalidateArrange();
         }
@@ -370,12 +414,15 @@ namespace appLauncher.Core.Pages
         }
         public static void UpdateMessage(string texttodisplay)
         {
-            //       Inapp.Show(texttodisplay);
+
         }
 
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+
             showMessage = Inapp;
+            navFrame.Height = MainNavigation.ActualHeight;
+            navFrame.Width = MainNavigation.ActualWidth - 50;
             PackageHelper.pageVariables.IsNext = _currentPage < (_numofPages - 1);
             PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
         }
@@ -409,6 +456,56 @@ namespace appLauncher.Core.Pages
         private void listView_ItemClick(object sender, ItemClickEventArgs e)
         {
 
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            navFrame.Height = MainNavigation.ActualHeight;
+            navFrame.Width = MainNavigation.ActualWidth - 50;
+        }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void Pagebutton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            PageIndicators pi = (PageIndicators)sender;
+            pageChanged?.Invoke(new PageChangedEventArgs(pi.PageNum));
+        }
+        public void UpdateIndicator(PageChangedEventArgs e)
+        {
+            PackageHelper.pageVariables.IsPrevious = e.PageIndex > 0;
+            PackageHelper.pageVariables.IsNext = e.PageIndex < _numofPages - 1;
+            int itemsCount = listView.Items.Count();
+            foreach (var item in pages)
+            {
+                if (item.PageNum == e.PageIndex)
+                {
+                    item.Selected = true;
+                }
+                else
+                {
+                    item.Selected = false;
+                }
+            }
+            Debug.WriteLine(e.PageIndex);
+            Bindings.Update();
+            //AdjustIndicatorStackPanel(e.PageIndex);
+
+        }
+
+        private void ellButtons_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Tapped_1(object sender, TappedRoutedEventArgs e)
+        {
+            var pagenumber = int.Parse(((Button)sender).Tag.ToString());
+
+            pageChanged?.Invoke(new PageChangedEventArgs(pagenumber + 1));
         }
     }
 }
