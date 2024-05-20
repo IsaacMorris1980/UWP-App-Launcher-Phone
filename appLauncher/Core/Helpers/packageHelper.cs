@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,16 +21,10 @@ namespace appLauncher.Core.Helpers
     public static class PackageHelper
     {
 
-        public static List<IApporFolder> SearchApps { get; set; }
+        public static List<IApporFolder> Search { get; set; }
         public static AppPaginationObservableCollection Apps { get; set; }
-        public static ObservableCollection<IApporFolder> AllApps { get; set; }
-        public static IEnumerable<Package> packages { get; set; } = new List<Package>();
-
         public static event EventHandler AppsRetreived;
-        public static FinalTiles CurrentWorkingTile { get; set; }
         public static PageChangingVariables pageVariables { get; set; }
-
-
         public static async Task<bool> IsFilePresent(string fileName, string folderPath = "")
         {
             IStorageItem item;
@@ -145,12 +138,11 @@ namespace appLauncher.Core.Helpers
                 listApps.AddRange(allApps);
             }
 
-            Apps = new AppPaginationObservableCollection(listApps.OrderBy(x => x.ListPos).ToList());
-            SearchApps = listApps.OrderBy(x => x.Name).ToList();
+            Apps = new AppPaginationObservableCollection(listApps.OrderBy(x => x.Name).ToList());
+            Search = listApps.OrderBy(x => x.Name).ToList();
             //      await Apps.RecalculateThePageItems();
             AppsRetreived(true, EventArgs.Empty);
         }
-
         public static async Task<List<FinalTiles>> GetApps()
         {
             PackageManager pm = new PackageManager();
@@ -200,7 +192,6 @@ namespace appLauncher.Core.Helpers
             }
             return listApps;
         }
-
         public static async Task SaveCollectionAsync()
         {
             try
@@ -274,8 +265,8 @@ namespace appLauncher.Core.Helpers
         }
         public static void RemoveFromSearch(string fullNmae)
         {
-            var folders = SearchApps.OfType<AppFolder>().ToList();
-            var apps = SearchApps.OfType<FinalTiles>().ToList();
+            var folders = Search.OfType<AppFolder>().ToList();
+            var apps = Search.OfType<FinalTiles>().ToList();
             List<IApporFolder> recombine = new List<IApporFolder>();
             foreach (AppFolder folder in folders)
             {
@@ -296,7 +287,7 @@ namespace appLauncher.Core.Helpers
             }
             recombine.AddRange(folders);
             recombine.AddRange(apps);
-            SearchApps = new List<IApporFolder>(recombine.OrderBy(x => x.ListPos));
+            Search = new List<IApporFolder>(recombine.OrderBy(x => x.Name));
         }
     }
 }

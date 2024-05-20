@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:helper="using:appLauncher.Core.Helpers"
      xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:ucontrols="using:appLauncher.Core.UserControls"
+    
    xmlns:models="using:appLauncher.Core.Model"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -109,19 +109,18 @@
                                   ScrollViewer.IsHorizontalRailEnabled="True"
                                   ScrollViewer.HorizontalScrollMode="Auto"
                                   ScrollViewer.VerticalScrollMode="Disabled"
-                                  VerticalAlignment="Center"
-                                  HorizontalAlignment="Stretch"
-                                  
+                                  VerticalAlignment="Top"
+                                  Grid.Column="1"
+                                  SelectionChanged="listView_SelectionChanged"
                                  
-                              >
-                            <ListView.Resources>
-                                <DataTemplate x:Key="PageButtons">
-                                    <ucontrols:EllipseButton />
-                                </DataTemplate>
-                            </ListView.Resources>
-                            <ListView.ItemTemplate>
-                                <StaticResource ResourceKey="PageButtons" />
-                            </ListView.ItemTemplate>
+                                  ItemClick="listView_ItemClick"
+                                  >
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+
                         </ListView>
                         <FontIcon />
                        

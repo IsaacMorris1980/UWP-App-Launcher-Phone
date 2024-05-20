@@ -253,11 +253,20 @@ namespace appLauncher.Core.Model
             {
                 removeapp.Remove(y => y.FullName == fullname);
             }
-            foreach (AppFolder item in removeappfromfolder)
+            for (int i = 0; i < removeappfromfolder.Count(); i++)
             {
+                AppFolder item = removeappfromfolder[i];
                 folderapps = new ObservableCollection<FinalTiles>(removeapp.Where(x => x.FolderName == item.Name).ToList());
                 item.FolderApps = folderapps.ToList();
-                finallist.Add(item);
+                if (item.FolderApps.Count() > 0)
+                {
+                    finallist.Add(item);
+                }
+                else
+                {
+                    removeappfromfolder.Remove(item);
+                }
+
             }
             finallist.AddRange(removeapp);
             originalCollection.Clear();
@@ -281,7 +290,7 @@ namespace appLauncher.Core.Model
             finallist.AddRange(removeapp);
             finallist.AddRange(removeappfromfolder);
             originalCollection.Clear();
-            originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.ListPos).ToList());
+            originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name).ToList());
             RecalculateThePageItems();
         }
         public void PageChanged(PageChangedEventArgs e)

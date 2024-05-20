@@ -258,120 +258,6 @@ namespace appLauncher.Core.Pages
             await this.Scale(2f, 2f, (float)this.ActualWidth / 2, (float)this.ActualHeight / 2, 0).StartAsync();
             await this.Scale(1, 1, (float)this.ActualWidth / 2, (float)this.ActualHeight / 2, 300).StartAsync();
         }
-        //private void SetupPageIndicators(PageNumChangedArgs e)
-        //{
-        //    _numOfPages = e.numofpages;
-        //    Bindings.Update();
-        //    int itemscount = listView.Items.Count;
-        //    FirstPage.numOfPages = e.numofpages;
-        //    if (firstrun && listView.Items.Count > 0)
-        //    {
-        //        listView.Items.Clear();
-        //        for (int i = 0; i < e.numofpages; i++)
-        //        {
-        //            Ellipse el = new Ellipse
-        //            {
-        //                Tag = i,
-        //                Height = 8,
-        //                Width = 8,
-        //                Margin = new Thickness(12),
-        //                Fill = new SolidColorBrush(Colors.Gray),
-
-        //            };
-        //            ToolTipService.SetToolTip(el, $"Page {i + 1}");
-        //            listView.Items.Add(el);
-        //        }
-        //    }
-        //    else if (firstrun && listView.Items.Count == 0)
-        //    {
-        //        for (int i = 0; i < e.numofpages; i++)
-        //        {
-        //            Ellipse el = new Ellipse
-        //            {
-        //                Tag = i,
-        //                Height = 8,
-        //                Width = 8,
-        //                Margin = new Thickness(12),
-        //                Fill = new SolidColorBrush(Colors.Gray),
-
-        //            };
-        //            ToolTipService.SetToolTip(el, $"Page {i + 1}");
-        //            listView.Items.Add(el);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (itemscount > e.numofpages)
-        //        {
-        //            for (int i = 0; i < itemscount; i++)
-        //            {
-        //                if (i > e.numofpages)
-        //                {
-        //                    listView.Items.RemoveAt(i);
-        //                }
-
-        //            }
-
-
-        //        }
-        //        else if (itemscount < e.numofpages)
-        //        {
-        //            int addto = itemscount;
-        //            for (int i = 0; i < e.numofpages; i++)
-        //            {
-        //                if (i == itemscount && itemscount == 0)
-        //                {
-        //                    Ellipse el = new Ellipse
-        //                    {
-        //                        Tag = i,
-        //                        Height = 8,
-        //                        Width = 8,
-        //                        Margin = new Thickness(12),
-        //                        Fill = new SolidColorBrush(Colors.Gray),
-
-        //                    };
-        //                    ToolTipService.SetToolTip(el, $"Page {i}");
-        //                    listView.Items.Add(el);
-        //                }
-        //                else
-        //                {
-        //                    if (i <= itemscount)
-        //                    {
-        //                        continue;
-        //                    }
-        //                    Ellipse el = new Ellipse
-        //                    {
-        //                        Tag = i,
-        //                        Height = 8,
-        //                        Width = 8,
-        //                        Margin = new Thickness(12),
-        //                        Fill = new SolidColorBrush(Colors.Gray),
-        //                    };
-        //                    addto += 1;
-        //                    ToolTipService.SetToolTip(el, $"Page {addto}");
-        //                    listView.Items.Add(el);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    buttonssetup = true;
-        //    GC.WaitForPendingFinalizers();
-        //    this.InvalidateArrange();
-        //}
-
-        private void Btn_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Button btn = (Button)sender;
-            int a = (int)btn.Tag;
-            pageChanged?.Invoke(new PageChangedEventArgs(a));
-            GC.WaitForPendingFinalizers();
-        }
-        public void SetPageSize(int number)
-        {
-            pageSizeChanged?.Invoke(new PageSizeEventArgs(number));
-        }
-
-
         /// <summary>
         /// Runs when the page has loaded
         /// <para> Sorts all of the apps into pages based on how
@@ -382,14 +268,7 @@ namespace appLauncher.Core.Pages
         /// <param name="e"></param>
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //if (PackageHelper.AllApps.Count <= 0)
-            //{
-            //    await PackageHelper.LoadCollectionAsync();
-            //}
-            //if (ImageHelper.backgroundImage.Count <= 0)
-            //{
-            //    await ImageHelper.LoadBackgroundImages();
-            //}
+
             _columns = NumofRoworColumn(94, (int)GridViewMain.ActualWidth);
             var rows = NumofRoworColumn(138, (int)gridView.ActualHeight);
             Debug.WriteLine($"Columns: {_columns}");
@@ -400,7 +279,7 @@ namespace appLauncher.Core.Pages
             additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
             if (additionalPagesToMake > 0)
             {
-                SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake - 1)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
+                SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
                 //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
 
                 numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
@@ -461,55 +340,7 @@ namespace appLauncher.Core.Pages
             return pagesToMake;
         }
 
-        //private void AdjustIndicatorStackPanel(int selectedIndex)
-        //{
-        //    try
-        //    {
-        //        if (!buttonssetup)
-        //        {
-        //            return;
-        //        }
-        //        if (!firstrun)
-        //        {
-        //            if (oldAnimatedEllipse != null)
-        //            {
-        //                Ellipse oldellipse = null;
-        //                Ellipse es = new Ellipse();
-        //                es.Fill = new SolidColorBrush(Colors.Gray);
-        //                es.Tag = "test";
-        //                es.Margin = new Thickness(20);
-        //                es.Tapped += OnTapped;
 
-        //                oldellipse = oldAnimatedEllipse;
-
-        //                ellipseToAnimate = (Ellipse)listView.Items[selectedIndex];
-        //                if (oldAnimatedEllipse != ellipseToAnimate && ellipseToAnimate != null)
-        //                {
-
-        //                    ellipseToAnimate.RenderTransform = new CompositeTransform() { ScaleX = 1.7f, ScaleY = 1.7f };
-        //                    oldellipse.RenderTransform = new CompositeTransform() { ScaleX = 1, ScaleY = 1 };
-        //                    ellipseToAnimate.Fill = new SolidColorBrush(Colors.Orange);
-        //                    oldellipse.Fill = new SolidColorBrush(Colors.Gray);
-        //                    oldAnimatedEllipse = ellipseToAnimate;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var a = listView.Items[selectedIndex];
-        //                ellipseToAnimate = (Ellipse)listView.Items[selectedIndex];
-        //                ellipseToAnimate.RenderTransform = new CompositeTransform() { ScaleX = 1.7f, ScaleY = 1.7f };
-        //                ellipseToAnimate.Fill = new SolidColorBrush(Colors.Orange);
-        //                oldAnimatedEllipse = ellipseToAnimate;
-        //            }
-        //            listView.SelectedIndex = selectedIndex;
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        LoggingCrashesAsync(e).ConfigureAwait(false);
-        //    }
-
-        //}
         private void OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var es = (Ellipse)sender;
@@ -552,9 +383,9 @@ namespace appLauncher.Core.Pages
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 var auto = sender;
-                if (PackageHelper.SearchApps.Count > 0)
+                if (PackageHelper.Search.Count > 0)
                 {
-                    sender.ItemsSource = PackageHelper.SearchApps.Where(p => p.Name.ToLower().Contains(((AutoSuggestBox)sender).Text.ToLower())).ToList();
+                    sender.ItemsSource = PackageHelper.Search.Where(p => p.Name.ToLower().Contains(((AutoSuggestBox)sender).Text.ToLower())).ToList();
 
                 }
             }
@@ -565,7 +396,7 @@ namespace appLauncher.Core.Pages
             FinalTiles ap = (FinalTiles)args.SelectedItem;
             PackageHelper.LaunchApp(ap.FullName).ConfigureAwait(false);
 
-            sender.ItemsSource = PackageHelper.SearchApps;
+            sender.ItemsSource = PackageHelper.Search;
             sender.Text = String.Empty;
         }
 
@@ -840,7 +671,7 @@ namespace appLauncher.Core.Pages
 
             if (additionalPagesToMake > 0)
             {
-                SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake - 1)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
+                SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
                 numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
                 pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
 

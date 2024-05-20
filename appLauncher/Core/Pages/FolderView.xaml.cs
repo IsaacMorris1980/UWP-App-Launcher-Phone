@@ -102,7 +102,7 @@ namespace appLauncher.Core.Pages
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 var auto = sender;
-                if (PackageHelper.SearchApps.Count > 0)
+                if (PackageHelper.Search.Count > 0)
                 {
                     sender.ItemsSource = displayfolder.FolderApps.Where(p => p.Name.ToLower().Contains(((AutoSuggestBox)sender).Text.ToLower())).ToList();
 

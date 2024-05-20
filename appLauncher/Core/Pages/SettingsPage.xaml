@@ -79,7 +79,7 @@
 
                          
                                     <ComboBox Height="60"   HorizontalAlignment="Center" Width="160" x:Name="Appslist" PlaceholderText="Select an app" Margin="10"
-                                              ItemsSource="{x:Bind helper:PackageHelper.SearchApps}"
+                                              ItemsSource="{x:Bind helper:PackageHelper.Search}"
                                           ToolTipService.ToolTip="Select an app to change settings on"    SelectionChanged="Appslist_SelectionChanged">
                                         <ComboBox.Resources>
                                             <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">

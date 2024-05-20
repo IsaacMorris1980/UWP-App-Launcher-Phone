@@ -10,9 +10,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -39,6 +42,7 @@ namespace appLauncher.Core.Pages
         private int _currentPage = 0;
         private int _numofPages = 0;
         private bool buttonssetup;
+        private int _numOfPages;
 
         public static event PageChangedDelegate pageChanged;
         public static event PageNumChangedDelegate pageNumChanged;
@@ -52,7 +56,7 @@ namespace appLauncher.Core.Pages
             MainPage.numofPagesChanged += SetupPageIndicators;
             PackageHelper.pageVariables = new PageChangingVariables();
             pageChanged += FirstPage_pageChanged;
-            pageNumChanged += SetupPageIndicators;
+            // pageNumChanged += SetupPageIndicators;
         }
 
 
@@ -62,11 +66,6 @@ namespace appLauncher.Core.Pages
             _currentPage = e.PageIndex;
             PackageHelper.pageVariables.IsPrevious = e.PageIndex > 0;
             PackageHelper.pageVariables.IsNext = e.PageIndex < _numofPages - 1;
-            Bindings.Update();
-        }
-
-        private void MainPage_pageChanged(PageChangedEventArgs e)
-        {
 
         }
 
@@ -138,34 +137,37 @@ namespace appLauncher.Core.Pages
         private void SetupPageIndicators(PageNumChangedArgs e)
         {
 
+            _numOfPages = e.numofpages;
             listView.Items.Clear();
-            _numofPages = e.numofpages;
-            pages.Clear();
-            for (int i = 0; i < _numofPages; i++)
+            for (int i = 0; i < e.numofpages; i++)
             {
-                PageIndicators pi = new PageIndicators()
+                Ellipse el = new Ellipse
                 {
-                    PageNum = i,
+                    Tag = i,
+                    Height = 13,
+                    Width = 13,
+                    Margin = new Thickness(12),
+                    Fill = (i == SettingsHelper.totalAppSettings.LastPageNumber) ? new SolidColorBrush(Colors.Orange) : new SolidColorBrush(Colors.Gray),
+
                 };
-                pi.Selected = false;
-                pages.Add(pi);
-                listView.Items.Add(i);
+
+                ToolTipService.SetToolTip(el, $"Page {i + 1}");
+                listView.Items.Add(el);
+                //foreach (int item in e.numofpages)
+                //{
+                //    PageIndicators pi = new PageIndicators()
+                //    {
+                //        PageNum = item-1,
+                //        DisplayPageNum 
+                //    };
+                //    pi.Selected = true;
+
+                //    listView.Items.Add(pi);
+                //}
             }
-
-            //foreach (int item in e.numofpages)
-            //{
-            //    PageIndicators pi = new PageIndicators()
-            //    {
-            //        PageNum = item-1,
-            //        DisplayPageNum 
-            //    };
-            //    pi.Selected = true;
-
-            //    listView.Items.Add(pi);
-            //}
             pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
 
-            Bindings.Update();
+            //Bindings.Update();
 
             showMessage.Show(listView.Items.Count().ToString(), 1000);
             // buttonssetup = true;
@@ -455,7 +457,6 @@ namespace appLauncher.Core.Pages
 
         private void listView_ItemClick(object sender, ItemClickEventArgs e)
         {
-
         }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -491,7 +492,7 @@ namespace appLauncher.Core.Pages
                 }
             }
             Debug.WriteLine(e.PageIndex);
-            Bindings.Update();
+            //     Bindings.Update();
             //AdjustIndicatorStackPanel(e.PageIndex);
 
         }
@@ -506,6 +507,25 @@ namespace appLauncher.Core.Pages
             var pagenumber = int.Parse(((Button)sender).Tag.ToString());
 
             pageChanged?.Invoke(new PageChangedEventArgs(pagenumber + 1));
+        }
+
+        private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            Ellipse el = ((Ellipse)listView.SelectedItem);
+            foreach (Ellipse els in listView.Items)
+            {
+                if ((int)(els.Tag) == ((int)el.Tag))
+                {
+                    els.Fill = new SolidColorBrush(Colors.Orange);
+                }
+                else
+                {
+                    els.Fill = new SolidColorBrush(Colors.Gray);
+                }
+                SettingsHelper.totalAppSettings.LastPageNumber = ((int)el.Tag);
+                pageChanged?.Invoke(new PageChangedEventArgs(((int)el.Tag)));
+            }
         }
     }
 }
