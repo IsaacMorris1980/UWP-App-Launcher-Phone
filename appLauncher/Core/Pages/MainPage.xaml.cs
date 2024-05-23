@@ -64,6 +64,9 @@ namespace appLauncher.Core.Pages
         public static int _appsPerScreen { get; set; }
         public DraggedItem _Itemdragged { get; set; } = new DraggedItem();
         public int _columns { get; set; }
+
+        private int _rows;
+
         public int _pageNum { get; set; }
         public int _numOfPages { get; set; }
         public bool _isDragging { get; set; }
@@ -100,6 +103,8 @@ namespace appLauncher.Core.Pages
                 this.InitializeComponent();
                 this.SizeChanged += MainPage_SizeChanged;
                 sizeChangeTimer.Tick += SizeChangeTimer_Tick;
+                sizeChangeTimer.Interval = new TimeSpan(0, 0, 1);
+
                 //   this.listView.SelectionChanged += ListView_SelectionChanged;
                 firstrun = true;
             }
@@ -161,37 +166,36 @@ namespace appLauncher.Core.Pages
 
             try
             {
-                if (currentTimeLeft == 0)
+
+                sizeChangeTimer.Stop();
+                GridViewMain.Width = this.ActualWidth;
+                GridViewMain.Height = this.ActualHeight;
+
+                _columns = NumofRoworColumn(94, (int)GridViewMain.Width);
+                _rows = NumofRoworColumn(108, (int)GridViewMain.Height);
+                Debug.WriteLine($"Columns: {_columns}");
+                Debug.WriteLine($"Rows: {_rows}");
+                _appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.Height) * NumofRoworColumn(94, (int)GridViewMain.Width));
+                Debug.WriteLine(_appsPerScreen);
+                int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
+                additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
+                if (additionalPagesToMake > 0)
                 {
-                    currentTimeLeft = 0;
-                    sizeChangeTimer.Stop();
+                    SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake - 1)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
+                    //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
 
+                    numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
+                    pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
 
-                    _columns = NumofRoworColumn(94, (int)GridViewMain.ActualWidth);
-                    _appsPerScreen = (NumofRoworColumn(138, (int)GridViewMain.ActualHeight) * NumofRoworColumn(94, (int)GridViewMain.ActualWidth));
-                    Debug.WriteLine(_appsPerScreen);
-                    int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
-                    additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
-                    if (additionalPagesToMake > 0)
-                    {
-                        SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake - 1)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
-                        //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
-
-                        numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
-                        pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
-
-                    }
-
-
-
-                    //    AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
-                    previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
-                    _pageNum = SettingsHelper.totalAppSettings.LastPageNumber;
                 }
-                else
-                {
-                    currentTimeLeft -= (int)sizeChangeTimer.Interval.TotalMilliseconds;
-                }
+
+
+
+                //    AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
+                previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
+                _pageNum = SettingsHelper.totalAppSettings.LastPageNumber;
+
+
                 threadPoolTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
                      {
                          //
@@ -230,21 +234,9 @@ namespace appLauncher.Core.Pages
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (firstrun)
-            {
-                firstrun = false;
-                return;
-            }
-            else
-            {
-                if (!sizeChangeTimer.IsEnabled)
-                {
-                    sizeChangeTimer.Interval = TimeSpan.FromMilliseconds(updateTimerLength / 10);
-                    sizeChangeTimer.Start();
-                }
-                currentTimeLeft = updateTimerLength;
+            sizeChangeTimer.Stop();
+            sizeChangeTimer.Start();
 
-            }
 
         }
 
@@ -269,46 +261,6 @@ namespace appLauncher.Core.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 
-            _columns = NumofRoworColumn(94, (int)GridViewMain.ActualWidth);
-            var rows = NumofRoworColumn(138, (int)gridView.ActualHeight);
-            Debug.WriteLine($"Columns: {_columns}");
-            Debug.WriteLine($"Rows: {rows}");
-            _appsPerScreen = (NumofRoworColumn(138, (int)GridViewMain.ActualHeight) * NumofRoworColumn(94, (int)GridViewMain.ActualWidth));
-            Debug.WriteLine(_appsPerScreen);
-            int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
-            additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
-            if (additionalPagesToMake > 0)
-            {
-                SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
-                //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
-
-                numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
-                pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
-                PackageHelper.pageVariables.IsPrevious = SettingsHelper.totalAppSettings.LastPageNumber > 0;
-                PackageHelper.pageVariables.IsNext = SettingsHelper.totalAppSettings.LastPageNumber < _numOfPages - 1;
-            }
-
-
-
-            //    AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
-            previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
-            _pageNum = SettingsHelper.totalAppSettings.LastPageNumber;
-            this.Background = ImageHelper.GetBackbrush;
-            threadPoolTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
-                 {
-                     //
-                     // Update the UI thread by using the UI core dispatcher.
-                     //
-                     await Dispatcher.RunAsync(CoreDispatcherPriority.High,
-                         agileCallback: () =>
-                         {
-                             this.Background = ImageHelper.GetBackbrush;
-
-                             GC.WaitForPendingFinalizers();
-                         });
-                 }
-                     , SettingsHelper.totalAppSettings.ImageRotationTime);
-            GC.WaitForPendingFinalizers();
 
         }
         private void disableScrollViewer(GridView gridView)
@@ -663,24 +615,69 @@ namespace appLauncher.Core.Pages
 
         private void GridViewMain_Loaded(object sender, RoutedEventArgs e)
         {
-            gridView = GridViewMain;
-            _columns = NumofRoworColumn(84, (int)GridViewMain.ActualWidth);
-            _appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.ActualHeight) * NumofRoworColumn(84, (int)GridViewMain.ActualWidth));
-            int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
-            additionalPagesToMake += (PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen)) > 0 ? 1 : 0;
+            GridViewMain.Width = this.ActualWidth;
+            GridViewMain.Height = this.Height;
 
+            _columns = NumofRoworColumn(94, (int)GridViewMain.ActualWidth);
+            _rows = NumofRoworColumn(108, (int)GridViewMain.ActualHeight);
+            Debug.WriteLine($"Columns: {_columns}");
+            Debug.WriteLine($"Rows: {_rows}");
+            var a = this.ActualHeight;
+            var b = this.ActualWidth;
+            _appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.ActualHeight) * NumofRoworColumn(94, (int)GridViewMain.ActualWidth));
+            Debug.WriteLine(_appsPerScreen);
+            int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
+            additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
             if (additionalPagesToMake > 0)
             {
                 SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
+                //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
+
                 numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
                 pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
-
+                PackageHelper.pageVariables.IsPrevious = SettingsHelper.totalAppSettings.LastPageNumber > 0;
+                PackageHelper.pageVariables.IsNext = SettingsHelper.totalAppSettings.LastPageNumber < _numOfPages - 1;
             }
 
+
+
+            //    AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
             previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
-            pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
-            //AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
-            this.InvalidateArrange();
+            _pageNum = SettingsHelper.totalAppSettings.LastPageNumber;
+            this.Background = ImageHelper.GetBackbrush;
+            threadPoolTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
+            {
+                //
+                // Update the UI thread by using the UI core dispatcher.
+                //
+                await Dispatcher.RunAsync(CoreDispatcherPriority.High,
+                    agileCallback: () =>
+                    {
+                        this.Background = ImageHelper.GetBackbrush;
+
+                        GC.WaitForPendingFinalizers();
+                    });
+            }
+                     , SettingsHelper.totalAppSettings.ImageRotationTime);
+            GC.WaitForPendingFinalizers();
+            //gridView = GridViewMain;
+            //_columns = NumofRoworColumn(84, (int)GridViewMain.ActualWidth);
+            //_appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.ActualHeight) * NumofRoworColumn(84, (int)GridViewMain.ActualWidth));
+            //int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
+            //additionalPagesToMake += (PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen)) > 0 ? 1 : 0;
+
+            //if (additionalPagesToMake > 0)
+            //{
+            //    SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
+            //    numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
+            //    pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
+
+            //}
+
+            //previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
+            //pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
+            ////AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
+            //this.InvalidateArrange();
         }
 
         private void GridViewMain_SizeChanged(object sender, SizeChangedEventArgs e)

@@ -89,6 +89,7 @@ namespace appLauncher.Core.Pages
             if (displayfolder.FolderApps.Count == 0)
             {
                 PackageHelper.Apps.Removefolder(displayfolder);
+                FirstPage.showMessage.Show($"Removing empty folder {displayfolder.Name}", 1000);
                 FirstPage.navFrame.Navigate(typeof(MainPage));
             }
             Bindings.Update();

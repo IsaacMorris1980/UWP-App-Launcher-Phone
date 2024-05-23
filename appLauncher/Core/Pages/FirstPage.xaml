@@ -82,8 +82,8 @@
                         <FontIcon x:Name="InstallorRemoveApp" Margin="0,10" ToolTipService.ToolTip="Install or Remove apps" FontFamily="Segoe MDL2 Assets" Glyph="&#xE896;" Tapped="InstallorRemoveApp_Tapped">
                             <FontIcon.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem x:Name="InstallApp" Tag="Install" ToolTipService.ToolTip="Install an application" Text="Install App" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" />
-                                    <MenuFlyoutItem x:Name="RemoveApp" Tag="Remove" ToolTipService.ToolTip="Remove an application" Text="Remove App" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" />
+                                    <MenuFlyoutItem x:Name="InstallApp" Tag="Install" ToolTipService.ToolTip="Install an application" Text="Install App" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Tapped="InstallorRemvoe" />
+                                    <MenuFlyoutItem x:Name="RemoveApp" Tag="Remove" ToolTipService.ToolTip="Remove an application" Text="Remove App" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Tapped="InstallorRemvoe" />
                                 </MenuFlyout>
                             </FontIcon.ContextFlyout>
                         </FontIcon>

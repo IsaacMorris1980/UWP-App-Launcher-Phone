@@ -239,38 +239,38 @@ namespace appLauncher.Core.Model
         {
             return originalCollection;
         }
-        public void RemoveApp(string fullname)
+        public void RemoveApp(string fullname, bool inFolder = false)
         {
             List<IApporFolder> finallist = new List<IApporFolder>();
-            ObservableCollection<FinalTiles> folderapps = new ObservableCollection<FinalTiles>();
-            List<FinalTiles> removeapp = originalCollection.OfType<FinalTiles>().ToList();
-            List<AppFolder> removeappfromfolder = originalCollection.OfType<AppFolder>().ToList();
-            foreach (AppFolder item in removeappfromfolder)
+            if (!inFolder)
             {
-                removeapp.AddRange(item.FolderApps);
-            }
-            if (removeapp.Any(x => x.FullName == fullname))
-            {
-                removeapp.Remove(y => y.FullName == fullname);
-            }
-            for (int i = 0; i < removeappfromfolder.Count(); i++)
-            {
-                AppFolder item = removeappfromfolder[i];
-                folderapps = new ObservableCollection<FinalTiles>(removeapp.Where(x => x.FolderName == item.Name).ToList());
-                item.FolderApps = folderapps.ToList();
-                if (item.FolderApps.Count() > 0)
-                {
-                    finallist.Add(item);
-                }
-                else
-                {
-                    removeappfromfolder.Remove(item);
-                }
+                List<FinalTiles> removeapp = originalCollection.OfType<FinalTiles>().ToList();
+                removeapp.Remove(x => x.FullName == fullname);
+                finallist.AddRange(removeapp);
+                finallist.AddRange(originalCollection.OfType<AppFolder>().ToList());
+                originalCollection.Clear();
+                originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name));
+                FirstPage.showMessage.Show("App removed", 1000);
+                return;
 
             }
-            finallist.AddRange(removeapp);
-            originalCollection.Clear();
-            originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.ListPos).ToList());
+            else
+            {
+                List<AppFolder> folders = originalCollection.OfType<AppFolder>().ToList();
+                foreach (AppFolder item in folders)
+                {
+                    if (item.FolderApps.Any(x => x.FullName == fullname))
+                    {
+                        item.FolderApps.Remove(x => x.FullName == fullname);
+                    }
+                    finallist.Add(item);
+                }
+                finallist.AddRange(originalCollection.OfType<FinalTiles>().ToList());
+                originalCollection.Clear();
+                originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name));
+
+            }
+
             RecalculateThePageItems();
         }
         public void Removefolder(AppFolder folder)
@@ -282,7 +282,7 @@ namespace appLauncher.Core.Model
 
             if (removeappfromfolder.Any(x => x.Name == folder.Name))
             {
-                var a = removeappfromfolder.First(x => x.Name == folder.Name);
+                AppFolder a = removeappfromfolder.First(x => x.Name == folder.Name);
                 folderapps = a.FolderApps;
                 removeapp.AddRange(folderapps);
                 removeappfromfolder.Remove(x => x.Name == folder.Name);

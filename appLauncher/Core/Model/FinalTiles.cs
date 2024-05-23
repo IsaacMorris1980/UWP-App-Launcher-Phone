@@ -6,6 +6,7 @@ using Microsoft.Toolkit.Uwp.Helpers;
 using Newtonsoft.Json;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace appLauncher.Core.Model
         private bool _inFolder;
         private bool _favorite;
         private int _launcedcount;
-        private string _folderName = string.Empty;
+        private List<string> _folderName = new List<string>();
         [JsonIgnore]
         public Package Pack
         {
@@ -300,7 +301,7 @@ namespace appLauncher.Core.Model
             }
         }
         [JsonProperty]
-        public string FolderName
+        public List<string> FolderName
         {
             get
             {

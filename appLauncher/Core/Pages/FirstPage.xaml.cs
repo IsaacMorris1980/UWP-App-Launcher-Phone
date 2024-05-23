@@ -310,13 +310,13 @@ namespace appLauncher.Core.Pages
                     break;
             }
         }
-        private void Rescan_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void Rescan_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
+            await PackageHelper.RescanForNewApplications();
         }
         private void FilterAppsAndFolders(object sender, TappedRoutedEventArgs e)
         {
-
+            PackageHelper.Apps.GetFilteredApps(((MenuFlyoutItem)sender).Tag.ToString());
         }
         private void CreateRemoveFolders(object sender, TappedRoutedEventArgs e)
         {
@@ -386,7 +386,7 @@ namespace appLauncher.Core.Pages
                         PackageHelper.Apps.RecalculateThePageItems();
                         break;
                     }
-                    //  MainPage.Inapp.Show("No apps launched more than 5 times", 500);
+                    showMessage.Show("No apps launched more than 5 times", 1000);
                     break;
                 default:
                     break;
@@ -412,12 +412,10 @@ namespace appLauncher.Core.Pages
             {
                 apps.AddRange(item.FolderApps.ToList());
             }
-            return apps.Any(x => x.LaunchedCount > 5);
+            bool mostusded = apps.Any(x => x.LaunchedCount > 5);
+            return mostusded;
         }
-        public static void UpdateMessage(string texttodisplay)
-        {
 
-        }
 
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
