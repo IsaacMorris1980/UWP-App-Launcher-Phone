@@ -73,40 +73,13 @@
                    
                         <ScrollViewer Height="300"  >
                             <StackPanel  Orientation="Vertical" VerticalAlignment="Stretch" Margin="10" HorizontalAlignment="Center" >
-                            <ToggleSwitch x:Name="AppSettings" OnContent="All Apps" OffContent="1 App" 
-                                          Toggled="AppSettings_Toggled" Header="Change settings on" ToolTipService.ToolTip="{x:Bind AppToggleTip}" />
-
-
-                         
-                                    <ComboBox Height="60"   HorizontalAlignment="Center" Width="160" x:Name="Appslist" PlaceholderText="Select an app" Margin="10"
-                                              ItemsSource="{x:Bind helper:PackageHelper.Search}"
-                                          ToolTipService.ToolTip="Select an app to change settings on"    SelectionChanged="Appslist_SelectionChanged">
-                                        <ComboBox.Resources>
-                                            <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">
-
-                                                <Grid ToolTipService.ToolTip="{x:Bind Tip}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,10,0,10" >
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="50" />
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Canvas Grid.Column="0" VerticalAlignment="Center" Background="{x:Bind LogoBrush}" Height="50" Width="50" />
-                                                    <TextBlock Grid.Column="1" Text="{x:Bind Name}" 
-                                                   VerticalAlignment="Center"
-                                                   Margin="4,0,0,0"
-                                                   FontSize="16" 
-                                              TextTrimming="CharacterEllipsis"
-                                                 TextWrapping="NoWrap"
-                                                     Width="100"
-                                                   Foreground="{x:Bind TextBrush}"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.Resources>
-                                <ComboBox.ItemTemplate>
-                                    <StaticResource ResourceKey="ComboTemplate" />
-                                </ComboBox.ItemTemplate>
-                                    </ComboBox>
-
-
+                            <TextBlock Text="Change all apps settings"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16,20,0,16"
+                               Name="AllAppstitleTextBlock"
+                               Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
+                             />
 
                             <ComboBox  HorizontalAlignment="Center" Width="160" Header="Set Logo Color" x:Name="TileLogoColor" Margin="10" ItemsSource="{x:Bind helper:SettingsHelper.totalAppSettings.AppColors}"
                                       SelectionChanged="TileLogoColor_SelectionChanged" ToolTipService.ToolTip="Set App Tile Logo Color" ToolTipService.Placement="Top"

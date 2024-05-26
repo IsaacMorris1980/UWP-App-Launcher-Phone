@@ -66,7 +66,7 @@ TextWrapping="Wrap"
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Name="AllTilesText" IsHitTestVisible="False" Text="All Tiles" />
                             <ScrollViewer Height="250" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                                <ListBox x:Load="False" SelectionMode="Single" x:Name="AllTiles" Width="175" Height="225" ItemsSource="{x:Bind _createdFolder.FolderApps}" SelectionChanged="AllTiles_SelectionChanged">
+                                <ListBox x:Load="False" SelectionMode="Single" x:Name="AllTiles" Width="175" Height="225" ItemsSource="{x:Bind tiles}" SelectionChanged="AllTiles_SelectionChanged">
                                     <ListBox.Resources>
                                         <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">
 
@@ -90,6 +90,7 @@ TextWrapping="Wrap"
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </ScrollViewer>
+                            <AppBarButton x:Name="SaveButton" Icon="Save" Label="Save" Tapped="SaveButton_Tapped" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

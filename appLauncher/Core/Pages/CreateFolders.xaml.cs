@@ -57,7 +57,7 @@ namespace appLauncher.Core.Pages
             tiles.Remove((FinalTiles)AllTiles.SelectedItem);
             AppsinFolders.ItemsSource = _createdFolder.FolderApps;
             this.UnloadObject(addApp);
-            Bindings.Update();
+            //Bindings.Update();
 
         }
 
@@ -67,7 +67,12 @@ namespace appLauncher.Core.Pages
             _createdFolder.FolderApps.Remove(tile);
             tiles.Add(tile);
             this.UnloadObject(removeApp);
-            Bindings.Update();
+            //Bindings.Update();
+
+        }
+
+        private void SaveButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
 
         }
     }

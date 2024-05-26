@@ -26,6 +26,14 @@ namespace appLauncher.Core.Pages
     /// </summary>
     public sealed partial class FirstPage : Page
     {
+        private string onpage = "";
+        private bool isOnMainPage
+        {
+            get
+            {
+                return onpage == "mainpage";
+            }
+        }
         public static List<FinalTiles> tiles = new List<FinalTiles>();
         public static List<AppFolder> appFolders = new List<AppFolder>();
         public static int numOfPages = 1;
@@ -52,6 +60,7 @@ namespace appLauncher.Core.Pages
             navFrame = NavFrame;
             searchDelay.Tick += SearchDelay_Tick;
             searchDelay.Interval = TimeSpan.FromMilliseconds(100);
+            onpage = "apploading";
             NavFrame.Navigate(typeof(AppLoading));
             MainPage.numofPagesChanged += SetupPageIndicators;
             PackageHelper.pageVariables = new PageChangingVariables();
@@ -148,144 +157,12 @@ namespace appLauncher.Core.Pages
                     Width = 13,
                     Margin = new Thickness(12),
                     Fill = (i == SettingsHelper.totalAppSettings.LastPageNumber) ? new SolidColorBrush(Colors.Orange) : new SolidColorBrush(Colors.Gray),
-
                 };
-
                 ToolTipService.SetToolTip(el, $"Page {i + 1}");
                 listView.Items.Add(el);
-                //foreach (int item in e.numofpages)
-                //{
-                //    PageIndicators pi = new PageIndicators()
-                //    {
-                //        PageNum = item-1,
-                //        DisplayPageNum 
-                //    };
-                //    pi.Selected = true;
-
-                //    listView.Items.Add(pi);
-                //}
             }
             pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
-
-            //Bindings.Update();
-
             showMessage.Show(listView.Items.Count().ToString(), 1000);
-            // buttonssetup = true;
-        }
-
-        private void El_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //int selindex = (int)((Ellipse)sender).Tag;
-
-
-
-
-
-            //int itemscount = listView.Items.Count;
-
-            //if (listView.Items.Count > 0)
-            //{
-            //    listView.Items.Clear();
-            //    for (int i = 0; i < numOfPages; i++)
-            //    {
-            //        Ellipse el = new Ellipse
-            //        {
-            //            Tag = i,
-            //            Height = 8,
-            //            Width = 8,
-            //            Margin = new Thickness(12),
-            //            Fill = new SolidColorBrush(Colors.Gray),
-
-            //        };
-            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
-            //        listView.Items.Add(el);
-            //    }
-            //}
-            //else if (listView.Items.Count == 0)
-            //{
-            //    for (int i = 0; i < e.numofpages; i++)
-            //    {
-            //        Ellipse el = new Ellipse
-            //        {
-            //            Tag = i,
-            //            Height = 8,
-            //            Width = 8,
-            //            Margin = new Thickness(12),
-            //            Fill = new SolidColorBrush(Colors.Gray),
-
-            //        };
-            //        ToolTipService.SetToolTip(el, $"Page {i + 1}");
-            //        listView.Items.Add(el);
-            //    }
-            //}
-            //else
-            //{
-            //    if (itemscount > e.numofpages)
-            //    {
-            //        for (int i = 0; i < itemscount; i++)
-            //        {
-            //            if (i > e.numofpages)
-            //            {
-            //                listView.Items.RemoveAt(i);
-            //            }
-
-            //        }
-
-            //        Button test = new Button();
-            //        test.Template = new ControlTemplate();
-            //        ControlTemplate temp = new ControlTemplate();
-            //        Ellipse elipse = new Ellipse
-            //        {
-            //            Width = 8,
-            //            Height = 8,
-            //            Fill = Colors.Gray,
-            //            Tag = i,
-            //        };
-
-            //    }
-            //    else if (itemscount < e.numofpages)
-            //    {
-            //        int addto = itemscount;
-            //        for (int i = 0; i < e.numofpages; i++)
-            //        {
-            //            if (i == itemscount && itemscount == 0)
-            //            {
-            //                Ellipse el = new Ellipse
-            //                {
-            //                    Tag = i,
-            //                    Height = 8,
-            //                    Width = 8,
-            //                    Margin = new Thickness(12),
-            //                    Fill = new SolidColorBrush(Colors.Gray),
-
-            //                };
-            //                ToolTipService.SetToolTip(el, $"Page {i}");
-            //                listView.Items.Add(el);
-            //            }
-            //            else
-            //            {
-            //                if (i <= itemscount)
-            //                {
-            //                    continue;
-            //                }
-            //                Ellipse el = new Ellipse
-            //                {
-            //                    Tag = i,
-            //                    Height = 8,
-            //                    Width = 8,
-            //                    Margin = new Thickness(12),
-            //                    Fill = new SolidColorBrush(Colors.Gray),
-            //                };
-            //                addto += 1;
-            //                ToolTipService.SetToolTip(el, $"Page {addto}");
-            //                listView.Items.Add(el);
-            //            }
-            //        }
-            //    }
-            //}
-
-            //GC.WaitForPendingFinalizers();
-            //this.InvalidateArrange();
         }
         private void CreateSpecialFolder_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -297,6 +174,7 @@ namespace appLauncher.Core.Pages
         }
         private void InstallorRemvoe(object sender, TappedRoutedEventArgs e)
         {
+
             switch (((MenuFlyoutItem)sender).Tag)
             {
                 case "Install":
@@ -318,12 +196,19 @@ namespace appLauncher.Core.Pages
         {
             PackageHelper.Apps.GetFilteredApps(((MenuFlyoutItem)sender).Tag.ToString());
         }
-        private void CreateRemoveFolders(object sender, TappedRoutedEventArgs e)
+        private async void CreateRemoveFolders(object sender, TappedRoutedEventArgs e)
         {
             switch (((MenuFlyoutItem)sender).Tag)
             {
                 case "Create":
-                    navFrame.Navigate(typeof(CreateFolders));
+                    AppFolder _createdFolder = new AppFolder();
+                    FolderNamePage dialog = new FolderNamePage();
+                    ContentDialogResult result = await dialog.ShowAsync();
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        _createdFolder.Name = dialog.FolderName;
+                    }
+                    navFrame.Navigate(typeof(EditFolder), _createdFolder);
                     break;
                 case "Remove":
                     navFrame.Navigate(typeof(RemoveFolder));
@@ -341,7 +226,14 @@ namespace appLauncher.Core.Pages
             switch (((MenuFlyoutItem)sender).Tag)
             {
                 case "new":
-                    navFrame.Navigate(typeof(CreateFolders));
+                    AppFolder _createdFolder = new AppFolder();
+                    FolderNamePage dialog = new FolderNamePage();
+                    ContentDialogResult result = await dialog.ShowAsync();
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        _createdFolder.Name = dialog.FolderName;
+                    }
+                    navFrame.Navigate(typeof(EditFolder), _createdFolder);
                     break;
                 case "remove":
                     navFrame.Navigate(typeof(RemoveFolder));
@@ -389,7 +281,7 @@ namespace appLauncher.Core.Pages
                     showMessage.Show("No apps launched more than 5 times", 1000);
                     break;
                 default:
-                    break;
+                    return;
             }
             await PackageHelper.SaveCollectionAsync();
         }
@@ -425,6 +317,7 @@ namespace appLauncher.Core.Pages
             navFrame.Width = MainNavigation.ActualWidth - 50;
             PackageHelper.pageVariables.IsNext = _currentPage < (_numofPages - 1);
             PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
+            onpage = "mainpage";
         }
 
         private void NextPage_Tapped(object sender, TappedRoutedEventArgs e)

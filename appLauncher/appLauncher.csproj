@@ -150,11 +150,17 @@
     <Compile Include="Core\Pages\CreateFolders.xaml.cs">
       <DependentUpon>CreateFolders.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Pages\EditApp.xaml.cs">
+      <DependentUpon>EditApp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Pages\EditFolder.xaml.cs">
       <DependentUpon>EditFolder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Pages\FirstPage.xaml.cs">
       <DependentUpon>FirstPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\FolderInfo.xaml.cs">
+      <DependentUpon>FolderInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Pages\FolderNamePage.xaml.cs">
       <DependentUpon>FolderNamePage.xaml</DependentUpon>
@@ -261,11 +267,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Pages\EditApp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Pages\EditFolder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Core\Pages\FirstPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\FolderInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -22,28 +22,6 @@ namespace appLauncher.Core.Pages
             this.InitializeComponent();
         }
 
-        private async void Home_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            var allapps = PackageHelper.Apps.GetOriginalCollection().ToList();
-            for (int i = 0; i < allapps.Count(); i++)
-            {
-                if (allapps[i].Name == _tiles.Name && allapps[i].GetType() == typeof(FinalTiles))
-                {
-                    ((FinalTiles)allapps[i]).Favorite = _tiles.Favorite;
-                    break;
-                }
-            }
-            PackageHelper.Apps = new AppPaginationObservableCollection(allapps);
-            await PackageHelper.SaveCollectionAsync();
-            await PackageHelper.LoadCollectionAsync();
-
-            Frame.Navigate(typeof(MainPage));
-        }
-
-        private void SettingsPage_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(SettingsPage));
-        }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             _tiles = e.Parameter as FinalTiles;

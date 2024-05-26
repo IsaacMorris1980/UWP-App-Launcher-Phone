@@ -85,7 +85,6 @@ namespace appLauncher.Core.Pages
             StorageFile errorFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("errors.json", CreationCollisionOption.OpenIfExists);
             string errorStr = crashToStore.ToString() + Environment.NewLine + Environment.NewLine;
             await FileIO.AppendTextAsync(errorFile, errorStr);
-
         }
 
         /// <summary>
@@ -548,23 +547,8 @@ namespace appLauncher.Core.Pages
 
         private void RelativePanel_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            RelativePanel i = (RelativePanel)sender;
-            object item = (e.OriginalSource as FrameworkElement)?.DataContext;
-            if (item != null && i != null)
-            {
-                if (item.GetType() == typeof(FinalTiles))
-                {
-                    _appfullname = ((FinalTiles)item).FullName;
-                    Frame.Navigate(typeof(AppInformation), ((FinalTiles)item));
+            ((RelativePanel)sender).ContextFlyout.ShowAt((RelativePanel)sender);
 
-                }
-                else
-                {
-                    return;
-                }
-
-
-            }
         }
 
         private void rightclickmenuitem_Tapped(object sender, TappedRoutedEventArgs e)
@@ -683,6 +667,50 @@ namespace appLauncher.Core.Pages
         private void GridViewMain_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
+        }
+
+        private void Edit_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MenuFlyoutItem i = (MenuFlyoutItem)sender;
+
+            object item = (e.OriginalSource as FrameworkElement)?.DataContext;
+            if (item != null && i != null)
+            {
+                if (item.GetType() == typeof(FinalTiles))
+                {
+                    _appfullname = ((FinalTiles)item).FullName;
+                    Frame.Navigate(typeof(EditApp), ((FinalTiles)item));
+
+                }
+                if (item.GetType() == typeof(AppFolder))
+                {
+                    Frame.Navigate(typeof(EditFolder), ((AppFolder)item));
+                }
+
+
+            }
+        }
+
+        private void Info_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MenuFlyoutItem i = (MenuFlyoutItem)sender;
+
+            object item = (e.OriginalSource as FrameworkElement)?.DataContext;
+            if (item != null && i != null)
+            {
+                if (item.GetType() == typeof(FinalTiles))
+                {
+                    _appfullname = ((FinalTiles)item).FullName;
+                    Frame.Navigate(typeof(AppInformation), ((FinalTiles)item));
+
+                }
+                if (item.GetType() == typeof(AppFolder))
+                {
+                    Frame.Navigate(typeof(FolderInfo), ((AppFolder)item));
+                }
+
+
+            }
         }
     }
 }
