@@ -84,10 +84,7 @@
 
 
                 <StackPanel  VerticalAlignment="Stretch" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                    <AppBarButton Margin="10" x:Name="Preview" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
-               Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Label="Preview" Content="Preview Changes"
-               Icon="Preview" Tapped="Preview_Tapped" ToolTipService.ToolTip="Preview Selected App" />
-                    <GridView Margin="10" x:Name="TestApps"   Height="84" Width="64">
+                 <GridView Margin="10" x:Name="TestApps"   Height="84" Width="64">
                         <GridView.Resources>
                             <DataTemplate x:Key="GridviewTemp" x:DataType="models:FinalTiles">
                                 <StackPanel ToolTipService.ToolTip="{x:Bind Tip}" Orientation="Vertical"

@@ -78,15 +78,15 @@ namespace appLauncher.Core.Model
         {
             List<FinalTiles> apps = originalCollection.OfType<FinalTiles>().ToList();
             List<AppFolder> folders = originalCollection.OfType<AppFolder>().ToList();
-            if (apps.Any(x => x.ListPos == tiles.ListPos))
+            if (apps.Any(x => x.FullName == tiles.FullName))
             {
-                apps[tiles.ListPos] = tiles;
+                apps[apps.FindIndex(x => x.FullName == tiles.FullName)] = tiles;
             }
             foreach (var item in folders)
             {
                 if (item.FolderApps.Any(x => x.Name == tiles.Name))
                 {
-                    var index = item.FolderApps.IndexOf(item.FolderApps.First(x => x.Name == tiles.Name));
+                    int index = item.FolderApps.FindIndex(x => x.FullName == tiles.FullName);
                     item.FolderApps[index] = tiles;
                 }
 
@@ -94,7 +94,7 @@ namespace appLauncher.Core.Model
             List<IApporFolder> lists = new List<IApporFolder>();
             lists.AddRange(apps);
             lists.AddRange(folders);
-            originalCollection = new ObservableCollection<IApporFolder>();
+            originalCollection = new ObservableCollection<IApporFolder>(lists.OrderBy(x => x.Name));
             RecalculateThePageItems();
         }
         public void UpdateFolder(AppFolder folder)

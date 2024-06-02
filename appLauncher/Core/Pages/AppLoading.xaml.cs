@@ -2,6 +2,7 @@
 using appLauncher.Core.Model;
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 using Windows.UI.Xaml;
@@ -35,6 +36,7 @@ namespace appLauncher.Core.Pages
 
         private async void PackageHelper_AppsRetreived(object sender, EventArgs e)
         {
+            Debug.WriteLine($"amount of tiles {PackageHelper.Apps.GetOriginalCollection().Count()}");
 
             await ImageHelper.LoadBackgroundImages();
         }

@@ -118,12 +118,11 @@
     <Compile Include="Core\DataTemplateSelectors\ApporFolderTemplateSelector.cs" />
     <Compile Include="Core\Enums\DeviceType.cs" />
     <Compile Include="Core\Extensions\ExtentionsMethods.cs" />
-    <Compile Include="Core\Helpers\GlobalVariables.cs" />
+    <Compile Include="Core\Helpers\Logging.cs" />
     <Compile Include="Core\Helpers\ImageHelper.cs" />
     <Compile Include="Core\Helpers\InstallorRemoveApplication.cs" />
     <Compile Include="Core\Helpers\PackageHelper.cs" />
     <Compile Include="Core\Helpers\SettingsHelper.cs" />
-    <Compile Include="Core\Helpers\TestPackageHelper.cs" />
     <Compile Include="Core\Interfaces\IApporFolder.cs" />
     <Compile Include="Core\Model\AppFolder.cs" />
     <Compile Include="Core\Model\ColorComboItem.cs" />

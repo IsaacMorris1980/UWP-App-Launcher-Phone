@@ -15,10 +15,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace appLauncher.Core.Pages
 {
     /// <summary>
@@ -45,13 +44,10 @@ namespace appLauncher.Core.Pages
         public static ObservableCollection<PageIndicators> pages = new ObservableCollection<PageIndicators>();
         public static Frame navFrame { get; set; }
         public static InAppNotification showMessage { get; set; }
-        public static SplitView firstView { get; set; }
-
         private int _currentPage = 0;
         private int _numofPages = 0;
         private bool buttonssetup;
         private int _numOfPages;
-
         public static event PageChangedDelegate pageChanged;
         public static event PageNumChangedDelegate pageNumChanged;
         public FirstPage()
@@ -60,24 +56,23 @@ namespace appLauncher.Core.Pages
             navFrame = NavFrame;
             searchDelay.Tick += SearchDelay_Tick;
             searchDelay.Interval = TimeSpan.FromMilliseconds(100);
-            onpage = "apploading";
             NavFrame.Navigate(typeof(AppLoading));
             MainPage.numofPagesChanged += SetupPageIndicators;
             PackageHelper.pageVariables = new PageChangingVariables();
             pageChanged += FirstPage_pageChanged;
-            // pageNumChanged += SetupPageIndicators;
+            navFrame.Navigating += NavFrame_Navigating;
         }
-
-
-
+        private void NavFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            onpage = (sender.GetType() == typeof(MainPage)) ? "mainpage" : string.Empty;
+            Debug.WriteLine(onpage);
+        }
         private void FirstPage_pageChanged(PageChangedEventArgs e)
         {
             _currentPage = e.PageIndex;
             PackageHelper.pageVariables.IsPrevious = e.PageIndex > 0;
             PackageHelper.pageVariables.IsNext = e.PageIndex < _numofPages - 1;
-
         }
-
         private void SearchDelay_Tick(object sender, object e)
         {
             if (currentTimeLeft == 0)
@@ -101,7 +96,6 @@ namespace appLauncher.Core.Pages
                 previousSearchText = searchText;
             }
         }
-
         private void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Debug.WriteLine("In back tapped");
@@ -114,38 +108,29 @@ namespace appLauncher.Core.Pages
         {
             NavFrame.Navigate(typeof(MainPage));
         }
-
         private void SettingsButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             NavFrame.Navigate(typeof(SettingsPage));
         }
-
         private void AboutButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             navFrame.Navigate(typeof(AboutPage));
         }
-
         private void FilterApps_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ((FontIcon)sender).ContextFlyout.ShowAt(((FontIcon)sender));
         }
-
-
-
         private void Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ((FontIcon)sender).ContextFlyout.ShowAt((FontIcon)sender);
         }
-
         private void Searchbox_TextChanged(object sender, TextChangedEventArgs e)
         {
             searchText = (((TextBox)sender).Text);
             PackageHelper.Apps.Search(searchText);
-
         }
         private void SetupPageIndicators(PageNumChangedArgs e)
         {
-
             _numOfPages = e.numofpages;
             listView.Items.Clear();
             for (int i = 0; i < e.numofpages; i++)
@@ -162,7 +147,6 @@ namespace appLauncher.Core.Pages
                 listView.Items.Add(el);
             }
             pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
-            showMessage.Show(listView.Items.Count().ToString(), 1000);
         }
         private void CreateSpecialFolder_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -174,7 +158,6 @@ namespace appLauncher.Core.Pages
         }
         private void InstallorRemvoe(object sender, TappedRoutedEventArgs e)
         {
-
             switch (((MenuFlyoutItem)sender).Tag)
             {
                 case "Install":
@@ -283,7 +266,6 @@ namespace appLauncher.Core.Pages
                 default:
                     return;
             }
-            await PackageHelper.SaveCollectionAsync();
         }
         private bool AnyFavorites()
         {
@@ -307,19 +289,14 @@ namespace appLauncher.Core.Pages
             bool mostusded = apps.Any(x => x.LaunchedCount > 5);
             return mostusded;
         }
-
-
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-
             showMessage = Inapp;
             navFrame.Height = MainNavigation.ActualHeight;
             navFrame.Width = MainNavigation.ActualWidth - 50;
             PackageHelper.pageVariables.IsNext = _currentPage < (_numofPages - 1);
             PackageHelper.pageVariables.IsPrevious = _currentPage > 0;
-            onpage = "mainpage";
         }
-
         private void NextPage_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (PackageHelper.pageVariables.IsNext)
@@ -336,19 +313,7 @@ namespace appLauncher.Core.Pages
             }
         }
 
-        private void NewFolder_Tapped(object sender, TappedRoutedEventArgs e)
-        {
 
-        }
-
-        private void RemoveFolder_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-
-        }
-
-        private void listView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-        }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -356,16 +321,6 @@ namespace appLauncher.Core.Pages
             navFrame.Width = MainNavigation.ActualWidth - 50;
         }
 
-        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-
-        }
-
-        private void Pagebutton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PageIndicators pi = (PageIndicators)sender;
-            pageChanged?.Invoke(new PageChangedEventArgs(pi.PageNum));
-        }
         public void UpdateIndicator(PageChangedEventArgs e)
         {
             PackageHelper.pageVariables.IsPrevious = e.PageIndex > 0;
@@ -402,7 +357,6 @@ namespace appLauncher.Core.Pages
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             Ellipse el = ((Ellipse)listView.SelectedItem);
             foreach (Ellipse els in listView.Items)
             {

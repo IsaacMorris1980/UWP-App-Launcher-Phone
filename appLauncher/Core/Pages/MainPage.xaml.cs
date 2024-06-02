@@ -36,8 +36,7 @@ namespace appLauncher.Core.Pages
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private int maxRows;
-        private int maxColumns;
+
         public static bool firstrun
         { get; set; } = true;
         private string _appfullname;
@@ -63,9 +62,9 @@ namespace appLauncher.Core.Pages
 
         public static int _appsPerScreen { get; set; }
         public DraggedItem _Itemdragged { get; set; } = new DraggedItem();
-        public int _columns { get; set; }
+        private int _columns { get; set; }
 
-        private int _rows;
+        private int _rows { get; set; }
 
         public int _pageNum { get; set; }
         public int _numOfPages { get; set; }
@@ -292,12 +291,7 @@ namespace appLauncher.Core.Pages
         }
 
 
-        private void OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var es = (Ellipse)sender;
-            //es.
-            //throw new NotImplementedException();
-        }
+
         private T FindFirstElementInVisualTree<T>(DependencyObject parentElement) where T : DependencyObject
         {
             var count = VisualTreeHelper.GetChildrenCount(parentElement);
@@ -524,24 +518,6 @@ namespace appLauncher.Core.Pages
 
         }
 
-        //private void Open_Tapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    var a = (string)((MenuFlyoutItem)sender).Tag;
-        //    var b = PackageHelper.Apps.OfType<AppFolder>().Where(x => x.Name == a);
-        //    if (b.Count() <= 0)
-        //    {
-        //        return;
-        //    }
-        //    Frame.Navigate(typeof(Folders), b.First());
-
-        //}
-
-        //private void Edit_Tapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    string names = (string)((MenuFlyoutItem)sender).Tag;
-        //    AppFolder fold = PackageHelper.Apps.OfType<AppFolder>().First(x => x.Name == names);
-        //    Frame.Navigate(typeof(Folders), fold);
-        //}
 
 
 
@@ -577,30 +553,13 @@ namespace appLauncher.Core.Pages
             Frame.Navigate(typeof(MainPage));
         }
 
-        private void MostUsed_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            List<FinalTiles> mostused = PackageHelper.Apps.GetOriginalCollection().OfType<FinalTiles>().Where(x => x.LaunchedCount > 5 && x.Favorite == false).ToList();
-            if (mostused.Count() <= 0)
-            {
-                return;
-            }
-            var appfolder = new AppFolder();
-            appfolder.Name = "Most Used";
-            appfolder.Description = "All apps used more then 5 times not marked as favorite";
-            foreach (var item in mostused)
-            {
-                appfolder.FolderApps.Add(item);
-            }
-            ObservableCollection<IApporFolder> allitems = PackageHelper.Apps.GetOriginalCollection();
-            allitems.Insert(0, appfolder);
-            PackageHelper.Apps = new AppPaginationObservableCollection(allitems);
-            Frame.Navigate(typeof(MainPage));
-        }
+
 
         private void GridViewMain_Loaded(object sender, RoutedEventArgs e)
         {
             GridViewMain.Width = this.ActualWidth;
             GridViewMain.Height = this.Height;
+            Debug.WriteLine($"amount of tiles {PackageHelper.Apps.GetOriginalCollection().Count()}");
 
             _columns = NumofRoworColumn(94, (int)GridViewMain.ActualWidth);
             _rows = NumofRoworColumn(108, (int)GridViewMain.ActualHeight);
@@ -608,83 +567,51 @@ namespace appLauncher.Core.Pages
             Debug.WriteLine($"Rows: {_rows}");
             var a = this.ActualHeight;
             var b = this.ActualWidth;
-            _appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.ActualHeight) * NumofRoworColumn(94, (int)GridViewMain.ActualWidth));
+            _appsPerScreen = _columns * _rows;
             Debug.WriteLine(_appsPerScreen);
             int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
             additionalPagesToMake += PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen) > 0 ? 1 : 0;
             if (additionalPagesToMake > 0)
             {
                 SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
-                //SetupPageIndicators(new PageNumChangedArgs(additionalPagesToMake));
-
                 numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
                 pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
                 PackageHelper.pageVariables.IsPrevious = SettingsHelper.totalAppSettings.LastPageNumber > 0;
                 PackageHelper.pageVariables.IsNext = SettingsHelper.totalAppSettings.LastPageNumber < _numOfPages - 1;
             }
-
-
-
-            //    AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
             previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
             _pageNum = SettingsHelper.totalAppSettings.LastPageNumber;
             this.Background = ImageHelper.GetBackbrush;
             threadPoolTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
             {
-                //
-                // Update the UI thread by using the UI core dispatcher.
-                //
                 await Dispatcher.RunAsync(CoreDispatcherPriority.High,
-                    agileCallback: () =>
-                    {
-                        this.Background = ImageHelper.GetBackbrush;
+                   agileCallback: () =>
+                   {
+                       this.Background = ImageHelper.GetBackbrush;
 
-                        GC.WaitForPendingFinalizers();
-                    });
+                       GC.WaitForPendingFinalizers();
+                   });
             }
                      , SettingsHelper.totalAppSettings.ImageRotationTime);
             GC.WaitForPendingFinalizers();
-            //gridView = GridViewMain;
-            //_columns = NumofRoworColumn(84, (int)GridViewMain.ActualWidth);
-            //_appsPerScreen = (NumofRoworColumn(108, (int)GridViewMain.ActualHeight) * NumofRoworColumn(84, (int)GridViewMain.ActualWidth));
-            //int additionalPagesToMake = calculateExtraPages(_appsPerScreen) - 1;
-            //additionalPagesToMake += (PackageHelper.Apps.GetOriginalCollection().Count - (additionalPagesToMake * _appsPerScreen)) > 0 ? 1 : 0;
-
-            //if (additionalPagesToMake > 0)
-            //{
-            //    SettingsHelper.totalAppSettings.LastPageNumber = (SettingsHelper.totalAppSettings.LastPageNumber > (additionalPagesToMake)) ? (additionalPagesToMake - 1) : SettingsHelper.totalAppSettings.LastPageNumber;
-            //    numofPagesChanged?.Invoke(new PageNumChangedArgs(additionalPagesToMake));
-            //    pageSizeChanged?.Invoke(new PageSizeEventArgs(_appsPerScreen));
-
-            //}
-
-            //previousSelectedIndex = SettingsHelper.totalAppSettings.LastPageNumber;
-            //pageChanged?.Invoke(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
-            ////AdjustIndicatorStackPanel(SettingsHelper.totalAppSettings.LastPageNumber);
-            //this.InvalidateArrange();
-        }
-
-        private void GridViewMain_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
         }
 
         private void Edit_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MenuFlyoutItem i = (MenuFlyoutItem)sender;
+
 
             object item = (e.OriginalSource as FrameworkElement)?.DataContext;
-            if (item != null && i != null)
+            if (item != null)
             {
                 if (item.GetType() == typeof(FinalTiles))
                 {
-                    _appfullname = ((FinalTiles)item).FullName;
                     Frame.Navigate(typeof(EditApp), ((FinalTiles)item));
-
+                    return;
                 }
                 if (item.GetType() == typeof(AppFolder))
                 {
                     Frame.Navigate(typeof(EditFolder), ((AppFolder)item));
+                    return;
                 }
 
 
@@ -693,20 +620,22 @@ namespace appLauncher.Core.Pages
 
         private void Info_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MenuFlyoutItem i = (MenuFlyoutItem)sender;
+
 
             object item = (e.OriginalSource as FrameworkElement)?.DataContext;
-            if (item != null && i != null)
+            if (item != null)
             {
+
                 if (item.GetType() == typeof(FinalTiles))
                 {
-                    _appfullname = ((FinalTiles)item).FullName;
                     Frame.Navigate(typeof(AppInformation), ((FinalTiles)item));
+                    return;
 
                 }
                 if (item.GetType() == typeof(AppFolder))
                 {
                     Frame.Navigate(typeof(FolderInfo), ((AppFolder)item));
+                    return;
                 }
 
 

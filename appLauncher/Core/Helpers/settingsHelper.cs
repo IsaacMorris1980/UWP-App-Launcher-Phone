@@ -69,6 +69,7 @@ namespace appLauncher.Core.Helpers
         }
         public static List<ColorComboItem> GetStaticPropertyBag(Type t)
         {
+
             const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             List<ColorComboItem> map = new List<ColorComboItem>();
             foreach (var prop in t.GetProperties(flags))
@@ -79,6 +80,26 @@ namespace appLauncher.Core.Helpers
                 map.Add(colorItem);
             }
             return map;
+        }
+        public static ColorComboItem MatchColor(Color c)
+        {
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            Type t = typeof(Colors);
+            List<ColorComboItem> a = GetStaticPropertyBag(typeof(Colors));
+            ColorComboItem colorItem = new ColorComboItem();
+            foreach (var prop in t.GetProperties(flags))
+            {
+                if (prop.Name.ToColor() == c)
+                {
+
+                    colorItem.ColorName = prop.Name;
+                    colorItem.ColorBrush = new Windows.UI.Xaml.Media.SolidColorBrush(prop.Name.ToColor());
+
+                }
+
+
+            }
+            return colorItem;
         }
         public static void SetApplicationResources()
         {

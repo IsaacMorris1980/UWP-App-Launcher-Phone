@@ -11,7 +11,6 @@
     xmlns:models="using:appLauncher.Core.Model"
     xmlns:selectors="using:appLauncher.Core.DataTemplateSelectors" xmlns:interfaces="using:appLauncher.Core.Interfaces"
     mc:Ignorable="d"
-    Loaded="Page_Loaded"
     PointerEntered="Page_PointerEntered">
      <Page.Resources>
          <DataTemplate x:Key="FolderTemplate" x:DataType="models:AppFolder">
@@ -72,12 +71,11 @@
             </Grid.RowDefinitions>
          
              <GridView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" PointerWheelChanged="GridViewMain_PointerWheelChanged" x:Name="GridViewMain"  Margin="10,0"  CanDrag="True" CanDragItems="True" AllowDrop="True" DragOver="GridViewMain_DragOver" IsItemClickEnabled="True" DragItemsStarting="GridViewMain_DragItemsStarting" Drop="GridViewMain_Drop" ItemClick="GridViewMain_ItemClick"
-                        ItemTemplateSelector="{StaticResource ApporFolderSelector}"
+                      ItemTemplateSelector="{StaticResource ApporFolderSelector}"
                       ItemsSource="{x:Bind helper:PackageHelper.Apps}"
-                       Loaded="GridViewMain_Loaded" 
-                       SizeChanged="GridViewMain_SizeChanged"
-                       BorderThickness="2"
-                       BorderBrush="Orange"
+                      Loaded="GridViewMain_Loaded" 
+                      BorderThickness="2"
+                      BorderBrush="Orange"
                       
                  />
 

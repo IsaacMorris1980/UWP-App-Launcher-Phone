@@ -181,13 +181,14 @@ namespace appLauncher.Core.Helpers
                             listApps.Add(finalTile);
                             es = null;
                             loc += 1;
+                            await Logging.Log(es);
                             continue;
                         }
                     }
                 }
                 catch (Exception es)
                 {
-
+                    await Logging.Log(es);
                 }
             }
             return listApps;
@@ -213,14 +214,22 @@ namespace appLauncher.Core.Helpers
             }
             catch (Exception es)
             {
-
+                await Logging.Log(es);
             }
         }
         public static async Task<bool> LaunchApp(string fullname)
         {
-            Package pm = new PackageManager().FindPackageForUser("", fullname);
-            IReadOnlyList<AppListEntry> listEntry = await pm.GetAppListEntriesAsync();
-            return await listEntry[0].LaunchAsync();
+            try
+            {
+                Package pm = new PackageManager().FindPackageForUser("", fullname);
+                IReadOnlyList<AppListEntry> listEntry = await pm.GetAppListEntriesAsync();
+                return await listEntry[0].LaunchAsync();
+            }
+            catch (Exception es)
+            {
+                await Logging.Log(es);
+            }
+            return false;
         }
         public static async Task RescanForNewApplications()
         {
