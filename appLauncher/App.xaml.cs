@@ -1,8 +1,6 @@
 ﻿using appLauncher.Core.Helpers;
 using appLauncher.Core.Pages;
 
-using GoogleAnalyticsv4SDK.Interfaces;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,9 +26,6 @@ namespace appLauncher
     sealed partial class App : Application
     {
         public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-        public List<IEvent> reportEvents;
-        public GoogleAnalyticsv4SDK.Helpers.GoogleAnalyticsEndpoints reportCrashandAnalytics;
-
         private bool isnetworkstatuschangedregistered = false;
         private NetworkStatusChangedEventHandler networkstatuschangedhandler;
         /// <summary>
