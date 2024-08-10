@@ -17,12 +17,13 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>appLauncher_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>
+    </PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
-    <PackageCertificateThumbprint>44841270374B6E5B81665D3394208C5DCD111D12</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2EF85269F695DBBBD1E755CC2665ED2B025C4235</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -137,14 +138,23 @@
     <Compile Include="Core\Pages\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Pages\AppBackgroundSettings.xaml.cs">
+      <DependentUpon>AppBackgroundSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Pages\AppInformation.xaml.cs">
       <DependentUpon>AppInformation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Pages\AppLoading.xaml.cs">
       <DependentUpon>AppLoading.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Pages\AppSettings.xaml.cs">
+      <DependentUpon>AppSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Pages\AppsListPage.xaml.cs">
       <DependentUpon>AppsListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppTilesSettings.xaml.cs">
+      <DependentUpon>AppTilesSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Pages\CreateFolders.xaml.cs">
       <DependentUpon>CreateFolders.xaml</DependentUpon>
@@ -250,6 +260,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Pages\AppBackgroundSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Pages\AppInformation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,7 +272,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Pages\AppSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Pages\AppsListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppTilesSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

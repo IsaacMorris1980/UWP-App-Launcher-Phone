@@ -34,8 +34,16 @@
                     <StackPanel Orientation="Vertical">
                         <FontIcon Margin="0,10" ToolTipService.ToolTip="Navigate back to previous page" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" Tapped="BackButton_Tapped" />
                         <FontIcon Margin="0,10" ToolTipService.ToolTip="Display All Apps" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A9;" Tapped="AppsButton_Tapped" />
-                        <FontIcon Margin="0,10" ToolTipService.ToolTip="Navigate to settings page" FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" Tapped="SettingsButton_Tapped" />
-                        <FontIcon Margin="0,10" ToolTipService.ToolTip="Filter apps and folders" FontFamily="Segoe MDL2 Assets" Glyph="&#xE71C;" Tapped="FilterApps_Tapped">
+                    <FontIcon Margin="0,10" ToolTipService.ToolTip="Navigate to settings page" FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" Tapped="SettingsButton_Tapped">
+                        <FontIcon.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem x:Name="BackImageSettings" ToolTipService.ToolTip="Set background image settings" Text="Background Image Settings" Tag="Images" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Tapped="BackImageSettings_Tapped" />
+                                <MenuFlyoutItem x:Name="AppTileSettings" ToolTipService.ToolTip="Set App Tile Settings" Text="App Tile Settings" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Tapped="AppTileSettings_Tapped" />
+                                <MenuFlyoutItem x:Name="AppSettings" ToolTipService.ToolTip="Set appLauncher settings" Text="App Settings" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Tapped="AppSettings_Tapped" />
+                            </MenuFlyout>
+                        </FontIcon.ContextFlyout>
+                    </FontIcon>
+                    <FontIcon Margin="0,10" ToolTipService.ToolTip="Filter apps and folders" FontFamily="Segoe MDL2 Assets" Glyph="&#xE71C;" Tapped="FilterApps_Tapped">
                             <FontIcon.ContextFlyout>
                                 <MenuFlyout >
                                     <MenuFlyoutSubItem x:Name="Filters" Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Text="Filter Apps" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}">

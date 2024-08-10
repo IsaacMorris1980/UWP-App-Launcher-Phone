@@ -110,7 +110,7 @@ namespace appLauncher.Core.Pages
         }
         private void SettingsButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            NavFrame.Navigate(typeof(SettingsPage));
+            ((FontIcon)sender).ContextFlyout.ShowAt(((FontIcon)sender));
         }
         private void AboutButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -338,10 +338,11 @@ namespace appLauncher.Core.Pages
                 }
             }
             Debug.WriteLine(e.PageIndex);
-            //     Bindings.Update();
+            PackageHelper.Apps.PageChanged(new PageChangedEventArgs(e.PageIndex));
+            Bindings.Update();
             //AdjustIndicatorStackPanel(e.PageIndex);
 
-        }
+        } 
 
         private void ellButtons_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -372,5 +373,27 @@ namespace appLauncher.Core.Pages
                 pageChanged?.Invoke(new PageChangedEventArgs(((int)el.Tag)));
             }
         }
+
+        private void listView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
+
+        private void BackImageSettings_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            navFrame.Navigate(typeof(AppBackgroundSettings));
+        }
+
+        private void AppTileSettings_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            navFrame.Navigate(typeof(AppTilesSettings));
+        }
+
+        private void AppSettings_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            navFrame.Navigate(typeof (AppSettings));
+        }
     }
 }
+

@@ -75,8 +75,7 @@
                       ItemsSource="{x:Bind helper:PackageHelper.Apps}"
                       Loaded="GridViewMain_Loaded" 
                       BorderThickness="2"
-                      BorderBrush="Orange"
-                      
+                                          
                  />
 
 

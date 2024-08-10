@@ -31,6 +31,7 @@ namespace appLauncher.Core.Model
             MainPage.pageChanged += PageChanged;
             MainPage.pageSizeChanged += SizedChanged;
             FirstPage.pageChanged += PageChanged;
+            RecalculateThePageItems();
         }
         public void RecalculateThePageItems()
         {
