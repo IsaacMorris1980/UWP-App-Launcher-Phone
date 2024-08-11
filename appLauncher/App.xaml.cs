@@ -1,12 +1,9 @@
 ﻿using appLauncher.Core.Helpers;
 using appLauncher.Core.Pages;
-
 using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Networking.Connectivity;
@@ -25,8 +22,6 @@ namespace appLauncher
     sealed partial class App : Application
     {
         public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-
-
         private bool isnetworkstatuschangedregistered = false;
         private NetworkStatusChangedEventHandler networkstatuschangedhandler;
         /// <summary>
