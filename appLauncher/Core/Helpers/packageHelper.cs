@@ -2,6 +2,7 @@
 using appLauncher.Core.Extensions;
 using appLauncher.Core.Interfaces;
 using appLauncher.Core.Model;
+using appLauncher.Core.Pages;
 
 using Newtonsoft.Json;
 
@@ -12,22 +13,18 @@ using System.Threading.Tasks;
 
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
 using Windows.Management.Deployment;
 using Windows.Storage;
-using Windows.Storage.Streams;
 
 namespace appLauncher.Core.Helpers
 {
     public static class PackageHelper
     {
 
-        public static List<FinalTiles> SearchApps { get; set; }
+        public static List<IApporFolder> Search { get; set; }
         public static AppPaginationObservableCollection Apps { get; set; }
-
         public static event EventHandler AppsRetreived;
-        public static PageChangingVariables pageVariables { get; set; } = new PageChangingVariables();
-
+        public static PageChangingVariables pageVariables { get; set; }
         public static async Task<bool> IsFilePresent(string fileName, string folderPath = "")
         {
             IStorageItem item;
@@ -44,10 +41,14 @@ namespace appLauncher.Core.Helpers
         }
         public static async Task LoadCollectionAsync()
         {
+            PackageManager pm = new PackageManager();
+            List<FinalTiles> allApps = await GetApps();
             List<IApporFolder> listApps = new List<IApporFolder>();
             List<FinalTiles> tiles = new List<FinalTiles>();
             List<AppFolder> folders = new List<AppFolder>();
             bool filesexist = false;
+
+
             if (await IsFilePresent("allapps.json"))
             {
                 StorageFile item = (StorageFile)await ApplicationData.Current.LocalFolder.TryGetItemAsync("allapps.json");
@@ -67,111 +68,131 @@ namespace appLauncher.Core.Helpers
             {
                 if (tiles.Count > 0)
                 {
-                    listApps.AddRange(tiles);
+                    foreach (FinalTiles item in tiles)
+                    {
+                        try
+                        {
+                            FinalTiles applist = new FinalTiles();
+                            applist = allApps.Find(x => x.FullName == item.FullName);
+                            if (applist != null)
+                            {
+
+
+                                applist.BackColor = item.BackColor;
+                                applist.LogoColor = item.LogoColor;
+                                applist.TextColor = item.TextColor;
+                                applist.ListPos = item.ListPos;
+                                applist.FolderListPos = item.FolderListPos;
+                                applist.Favorite = item.Favorite;
+                                await applist.SetLogo();
+                                listApps.Add(applist);
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                            await MainPage.LoggingCrashesAsync(ex);
+                        }
+
+                    }
+
                 }
                 if (folders.Count > 0)
                 {
-                    listApps.AddRange(folders);
+                    foreach (var item in folders)
+                    {
+                        foreach (var items in item.FolderApps)
+                        {
+                            FinalTiles applist = new FinalTiles();
+                            applist = allApps.First(x => x.FullName == items.FullName);
+                            try
+                            {
+                                applist.BackColor = items.BackColor;
+                                applist.LogoColor = items.LogoColor;
+                                applist.TextColor = items.TextColor;
+                                applist.ListPos = items.ListPos;
+                                applist.FolderListPos = items.FolderListPos;
+                                applist.Favorite = items.Favorite;
+                                await applist.SetLogo();
+                            }
+                            catch (Exception ex)
+                            {
+
+                                await MainPage.LoggingCrashesAsync(ex);
+                            }
+                            await items.SetLogo();
+                        }
+                        listApps.Add(item);
+                    }
+
                 }
 
             }
             else
             {
-                List<FinalTiles> applist = await GetApps();
-                listApps.AddRange(applist);
-
+                foreach (var item in allApps.OfType<FinalTiles>().ToList())
+                {
+                    await item.SetLogo();
+                }
+                listApps.AddRange(allApps);
             }
-            Apps = new AppPaginationObservableCollection(listApps.OrderBy(x => x.ListPos).ToList());
+
+            Apps = new AppPaginationObservableCollection(listApps.OrderBy(x => x.Name).ToList());
+            Search = listApps.OrderBy(x => x.Name).ToList();
+            //      await Apps.RecalculateThePageItems();
             AppsRetreived(true, EventArgs.Empty);
         }
-
         public static async Task<List<FinalTiles>> GetApps()
         {
+            PackageManager pm = new PackageManager();
+            List<Package> packages = pm.FindPackagesForUserWithPackageTypes("", PackageTypes.Main).ToList();
             List<FinalTiles> listApps = new List<FinalTiles>();
-            PackageManager packageManager = new PackageManager();
             int loc = 0;
-            IEnumerable<Package> appsLists = packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main);
-            foreach (Package item in appsLists)
+            foreach (Package item in packages)
             {
                 try
                 {
-
                     IReadOnlyList<AppListEntry> appsEntry = await item.GetAppListEntriesAsync();
                     if (appsEntry.Count > 0)
                     {
                         try
                         {
-                            RandomAccessStreamReference logoStream;
-                            try
+                            FinalTiles finalTile = new FinalTiles()
                             {
-                                logoStream = appsEntry[0].DisplayInfo.GetLogo(new Size(50, 50));
-                            }
-                            catch (Exception es)
-                            {
-                                listApps.Add(new FinalTiles()
-                                {
-                                    Name = item.DisplayName,
-                                    FullName = item.Id.FullName,
-                                    ListPos = loc,
-                                    Description = item.Description,
-                                    Developer = item.PublisherDisplayName,
-                                    InstalledDate = item.InstalledDate,
-                                    Tip = $"Name: {item.DisplayName}{Environment.NewLine}Developer: {item.PublisherDisplayName}{Environment.NewLine}Installed: {item.InstalledDate}",
-                                    Logo = new byte[1]
-                                });
-
-                                loc += 1;
-                                es = null;
-                                continue;
-                            }
-                            IRandomAccessStreamWithContentType whatIWant = await logoStream.OpenReadAsync();
-                            byte[] temp = new byte[whatIWant.Size];
-                            using (DataReader read = new DataReader(whatIWant.GetInputStreamAt(0)))
-                            {
-                                await read.LoadAsync((uint)whatIWant.Size);
-                                read.ReadBytes(temp);
-                            }
-                            listApps.Add(new FinalTiles()
-                            {
-                                Name = item.DisplayName,
-                                FullName = item.Id.FullName,
-                                Description = item.Description,
+                                Pack = item,
+                                Entry = appsEntry[0],
                                 ListPos = loc,
-                                Developer = item.PublisherDisplayName,
-                                InstalledDate = item.InstalledDate,
-                                Tip = $"Name: {item.DisplayName}{Environment.NewLine}Developer: {item.PublisherDisplayName}{Environment.NewLine}Installed: {item.InstalledDate}",
-                                Logo = temp
-                            });
+                            };
+                            await finalTile.SetLogo();
+                            listApps.Add(finalTile);
                             loc += 1;
                         }
                         catch (Exception es)
                         {
-                            listApps.Add(new FinalTiles()
+                            FinalTiles finalTile = new FinalTiles()
                             {
-                                Name = item.DisplayName,
-                                FullName = item.Id.FullName,
-                                Description = item.Description,
+                                Pack = item,
+                                Entry = appsEntry[0],
                                 ListPos = loc,
-                                Developer = item.PublisherDisplayName,
-                                InstalledDate = item.InstalledDate,
-                                Tip = $"Name: {item.DisplayName}{Environment.NewLine}Developer: {item.PublisherDisplayName}{Environment.NewLine}Installed: {item.InstalledDate}",
-                                Logo = new byte[1]
-                            });
 
+                            };
+                            await finalTile.SetLogo();
+                            listApps.Add(finalTile);
                             es = null;
                             loc += 1;
+                            await Logging.Log(es);
                             continue;
                         }
                     }
                 }
                 catch (Exception es)
                 {
-
+                    await Logging.Log(es);
                 }
             }
             return listApps;
         }
-
         public static async Task SaveCollectionAsync()
         {
             try
@@ -190,19 +211,25 @@ namespace appLauncher.Core.Helpers
                     StorageFile folderFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("folders.json", CreationCollisionOption.ReplaceExisting);
                     await FileIO.WriteTextAsync(folderFile, savefolderstring);
                 }
-
-
             }
             catch (Exception es)
             {
-
+                await Logging.Log(es);
             }
         }
         public static async Task<bool> LaunchApp(string fullname)
         {
-            Package pm = new PackageManager().FindPackageForUser("", fullname);
-            IReadOnlyList<AppListEntry> listEntry = await pm.GetAppListEntriesAsync();
-            return await listEntry[0].LaunchAsync();
+            try
+            {
+                Package pm = new PackageManager().FindPackageForUser("", fullname);
+                IReadOnlyList<AppListEntry> listEntry = await pm.GetAppListEntriesAsync();
+                return await listEntry[0].LaunchAsync();
+            }
+            catch (Exception es)
+            {
+                await Logging.Log(es);
+            }
+            return false;
         }
         public static async Task RescanForNewApplications()
         {
@@ -242,7 +269,34 @@ namespace appLauncher.Core.Helpers
                 }
             }
             Apps = new AppPaginationObservableCollection(listOfApps.OrderBy(x => x.Name));
+            Apps.RecalculateThePageItems();
             return;
+        }
+        public static void RemoveFromSearch(string fullNmae)
+        {
+            var folders = Search.OfType<AppFolder>().ToList();
+            var apps = Search.OfType<FinalTiles>().ToList();
+            List<IApporFolder> recombine = new List<IApporFolder>();
+            foreach (AppFolder folder in folders)
+            {
+                foreach (FinalTiles item in folder.FolderApps)
+                {
+                    if (item.FullName == fullNmae)
+                    {
+                        folder.FolderApps.Remove(item);
+                    }
+                }
+            }
+            foreach (var item in apps)
+            {
+                if (item.FullName == fullNmae)
+                {
+                    apps.Remove(item);
+                }
+            }
+            recombine.AddRange(folders);
+            recombine.AddRange(apps);
+            Search = new List<IApporFolder>(recombine.OrderBy(x => x.Name));
         }
     }
 }

@@ -34,14 +34,8 @@ namespace appLauncher.Core.Pages
         private string Appscolor;
         private string apptextcolor;
         private string appbackcolor;
-        string AppToggleTip = $"Change settings{Environment.NewLine}On:  All apps settings{Environment.NewLine}Off:  Only Single app settings";
-        string ReportToggleTip = $"Enable reporting?{Environment.NewLine}On:  Crashes and Navigation information is reported{Environment.NewLine}Off: Nothing reported";
 
 
-        private void MainPage_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(MainPage));
-        }
 
         private async void AddButton_TappedAsync(object sender, TappedRoutedEventArgs e)
         {
@@ -107,13 +101,7 @@ namespace appLauncher.Core.Pages
             }
         }
 
-        private void Appslist_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Appslist.SelectedIndex > -1)
-            {
-                selectedapp = (FinalTiles)Appslist.SelectedItem;
-            }
-        }
+
 
         private void Preview_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -143,9 +131,7 @@ namespace appLauncher.Core.Pages
 
         private void ResetAppTilePage()
         {
-            Appslist.IsHitTestVisible = false;
-            Appslist.Visibility = Visibility.Collapsed;
-            Appslist.SelectedIndex = -1;
+
             Preview.IsHitTestVisible = false;
             SaveChanges.IsHitTestVisible = false;
             TileLogoColor.IsHitTestVisible = false;
@@ -167,37 +153,15 @@ namespace appLauncher.Core.Pages
             Frame.Navigate(typeof(SettingsPage));
         }
 
-        private void AppSettings_Toggled(object sender, RoutedEventArgs e)
-        {
-            bool ison = ((ToggleSwitch)sender).IsOn;
-            Appslist.Visibility = ison == true ? Visibility.Collapsed : Visibility.Visible;
-            Appslist.IsHitTestVisible = !ison;
-            Preview.IsHitTestVisible = true;
-            TileLogoColor.IsHitTestVisible = true;
-            TileTextColor.IsHitTestVisible = true;
-            TileBackColor.IsHitTestVisible = true;
-            TileBackOpacity.IsHitTestVisible = true;
-            LogoOpacity.IsHitTestVisible = true;
-            TileTextOpacity.IsHitTestVisible = true;
-            selectedapp = ison == true ? PackageHelper.SearchApps[0] : null;
-            TestApps.Visibility = Visibility.Visible;
-            TestApps.IsHitTestVisible = true;
-            allapps = ison == true ? true : false;
-        }
-
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
 
         {
-
+            selectedapp = PackageHelper.Apps.GetOriginalCollection().OfType<FinalTiles>().FirstOrDefault();
 
         }
 
-        private void AboutPage_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(AboutPage));
-        }
-
+      
 
 
 

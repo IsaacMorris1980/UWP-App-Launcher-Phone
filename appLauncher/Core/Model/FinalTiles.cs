@@ -6,9 +6,15 @@ using Microsoft.Toolkit.Uwp.Helpers;
 using Newtonsoft.Json;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
+using Windows.Foundation;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
@@ -18,13 +24,12 @@ namespace appLauncher.Core.Model
     public class FinalTiles : ModelBase, IApporFolder
     {
         private const string _notRetrieved = "{0} was not retrieved";
-        private string _name;
+        private AppListEntry _entry;
+        private Package _pack;
         private string _fullName;
-        private string _description;
-        private string _developer;
-        private long _installedDate;
-        private int _listPos;
-        private string _logo;
+        public int _listPos;
+        public int _folderListPos;
+        private byte[] _logo = new byte[1];
         private string _logoColor;
         private string _backColor;
         private string _textColor;
@@ -32,85 +37,101 @@ namespace appLauncher.Core.Model
         private bool _inFolder;
         private bool _favorite;
         private int _launcedcount;
-        private string _folderName = string.Empty;
-        [JsonProperty]
+        private List<string> _folderName = new List<string>();
+        [JsonIgnore]
+        public Package Pack
+        {
+            get
+            {
+                return _pack;
+            }
+            set
+            {
+                _pack = value;
+                _fullName = value.Id.FullName;
+            }
+        }
+        [JsonIgnore]
+        public AppListEntry Entry
+        {
+            get
+            {
+                return _entry;
+            }
+            set
+            {
+                _entry = value;
+            }
+        }
+        [JsonIgnore]
         public string Name
         {
             get
             {
-                if (string.IsNullOrEmpty(_name))
+                if (_pack == null)
                 {
-                    return string.Format(_notRetrieved, "App Name");
+                    return string.Format(_notRetrieved, "Package Name");
                 }
-                return _name;
+                return _pack.DisplayName;
             }
             set
             {
-                SetProperty(ref _name, value);
+
             }
+
         }
         [JsonProperty]
         public string FullName
         {
             get
             {
-                if (string.IsNullOrEmpty(_fullName))
-                {
-                    return string.Format(_notRetrieved, "App Full Name");
-                }
                 return _fullName;
             }
             set
             {
                 _fullName = value;
             }
+
         }
-        [JsonProperty]
+        [JsonIgnore]
         public string Description
         {
             get
             {
-                if (string.IsNullOrEmpty(_description))
+                if (_pack == null)
                 {
-                    return string.Format(_notRetrieved, _description);
+                    return string.Format(_notRetrieved, "Package Description");
                 }
-                return _description;
+                return _pack.Description;
             }
             set
             {
-                _description = value;
+
             }
+
         }
-        [JsonProperty]
+        [JsonIgnore]
         public string Developer
         {
             get
             {
-                if (string.IsNullOrEmpty(_developer))
+                if (_pack == null)
                 {
                     return string.Format(_notRetrieved, "App Developer");
                 }
-                return _developer;
-            }
-            set
-            {
-                _developer = value;
+                return _pack.PublisherDisplayName;
             }
         }
-        [JsonProperty]
+        [JsonIgnore]
         public DateTimeOffset InstalledDate
         {
             get
             {
-                if (_installedDate == 0)
+                if (_pack == null)
                 {
                     return DateTimeOffset.FromUnixTimeSeconds(0);
                 }
-                return DateTimeOffset.FromUnixTimeSeconds(_installedDate);
-            }
-            set
-            {
-                _installedDate = value.ToUnixTimeSeconds();
+                return _pack.InstalledDate;
             }
         }
         [JsonProperty]
@@ -126,19 +147,57 @@ namespace appLauncher.Core.Model
             }
         }
         [JsonProperty]
+        public int FolderListPos
+        {
+            get
+            {
+                return _folderListPos;
+            }
+            set
+            {
+                SetProperty(ref _folderListPos, value);
+            }
+        }
+        [JsonIgnore]
         public byte[] Logo
         {
             get
             {
-                if (string.IsNullOrEmpty(_logo))
-                {
-                    return new byte[1];
-                }
-                return Convert.FromBase64String(_logo);
+                return _logo;
             }
             set
             {
-                _logo = Convert.ToBase64String(value);
+                _logo = value;
+            }
+        }
+        public async Task SetLogo()
+        {
+
+            try
+            {
+
+                try
+                {
+                    RandomAccessStreamReference logoStream = _entry.DisplayInfo.GetLogo(new Size(50, 50));
+                    IRandomAccessStreamWithContentType whatIWant = await logoStream.OpenReadAsync();
+                    byte[] temp = new byte[whatIWant.Size];
+                    using (DataReader read = new DataReader(whatIWant.GetInputStreamAt(0)))
+                    {
+                        await read.LoadAsync((uint)whatIWant.Size);
+                        read.ReadBytes(temp);
+                    }
+                    Logo = temp;
+                }
+                catch (Exception es)
+                {
+                    Logo = new byte[1];
+                }
+
+            }
+            catch (Exception es)
+            {
+                Logo = new byte[1];
+
             }
         }
         [JsonProperty]
@@ -242,7 +301,7 @@ namespace appLauncher.Core.Model
             }
         }
         [JsonProperty]
-        public string FolderName
+        public List<string> FolderName
         {
             get
             {
@@ -277,6 +336,12 @@ namespace appLauncher.Core.Model
                 SetProperty(ref _launcedcount, value);
             }
         }
+        public async Task<bool> Launch()
+        {
+            return await Entry.LaunchAsync();
+        }
+
+
     }
 
 }

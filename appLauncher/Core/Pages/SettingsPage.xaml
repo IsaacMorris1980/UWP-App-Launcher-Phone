@@ -2,6 +2,7 @@
     x:Class="appLauncher.Core.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helper="using:appLauncher.Core.Helpers"
@@ -17,10 +18,7 @@
          <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <RelativePanel HorizontalAlignment="Stretch" Height="100" Margin="10"
                               VerticalAlignment="Stretch">
-                <AppBarButton Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
-                          ToolTipService.ToolTip="Return to home page" Label="Main Page" LabelPosition="Default" Margin="25,20,20,0" x:Name="HomePage" Content="Home Page" RelativePanel.AlignLeftWithPanel="True"  Icon="Home" Tapped="MainPage_Tapped"
-                        
-                               />  
+             
                 <TextBlock Text="Settings"
                        FontSize="36"
                        FontWeight="Bold"
@@ -28,10 +26,7 @@
                        Name="titleTextBlock"
                        Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"/>
-                <AppBarButton Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
-                              Label="About" LabelPosition="Default" Margin="25,20,20,0" x:Name="AboutPage" Content="About"
-                              Tapped="AboutPage_Tapped" RelativePanel.AlignRightWithPanel="True" Icon="Contact"
-                              ToolTipService.ToolTip="Navigate to About Page"/>
+          
             </RelativePanel>
             <Pivot Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}">
                <PivotItem Margin="10" x:Name="Images" >
@@ -48,7 +43,7 @@
                                           Icon="Remove" x:Name="RemoveButton" HorizontalAlignment="Right" Tapped="RemoveButton_Tapped"
                                           ToolTipService.ToolTip="Remove a background image including a gif"/>
                         </StackPanel>
-                        <ScrollViewer Height="300" x:Name="imageScrollview"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <ScrollViewer Height="400" x:Name="imageScrollview"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <ListView Width="60" BorderThickness="2" Name="imagelist" CanDrag="True" CanDragItems="True" AllowDrop="True"  CanReorderItems="True" 
                                       ToolTipService.ToolTip="Background images"
 
@@ -79,40 +74,13 @@
                    
                         <ScrollViewer Height="300"  >
                             <StackPanel  Orientation="Vertical" VerticalAlignment="Stretch" Margin="10" HorizontalAlignment="Center" >
-                            <ToggleSwitch x:Name="AppSettings" OnContent="All Apps" OffContent="1 App" 
-                                          Toggled="AppSettings_Toggled" Header="Change settings on" ToolTipService.ToolTip="{x:Bind AppToggleTip}" />
-
-
-                         
-                                    <ComboBox Height="60"   HorizontalAlignment="Center" Width="160" x:Name="Appslist" PlaceholderText="Select an app" Margin="10"
-                                              ItemsSource="{x:Bind helper:PackageHelper.SearchApps}"
-                                          ToolTipService.ToolTip="Select an app to change settings on"    SelectionChanged="Appslist_SelectionChanged">
-                                        <ComboBox.Resources>
-                                            <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">
-
-                                                <Grid ToolTipService.ToolTip="{x:Bind Tip}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,10,0,10" >
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="50" />
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Canvas Grid.Column="0" VerticalAlignment="Center" Background="{x:Bind LogoBrush}" Height="50" Width="50" />
-                                                    <TextBlock Grid.Column="1" Text="{x:Bind Name}" 
-                                                   VerticalAlignment="Center"
-                                                   Margin="4,0,0,0"
-                                                   FontSize="16" 
-                                              TextTrimming="CharacterEllipsis"
-                                                 TextWrapping="NoWrap"
-                                                     Width="100"
-                                                   Foreground="{x:Bind TextBrush}"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ComboBox.Resources>
-                                <ComboBox.ItemTemplate>
-                                    <StaticResource ResourceKey="ComboTemplate" />
-                                </ComboBox.ItemTemplate>
-                                    </ComboBox>
-
-
+                            <TextBlock Text="Change all apps settings"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="16,20,0,16"
+                               Name="AllAppstitleTextBlock"
+                               Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
+                              />
 
                             <ComboBox  HorizontalAlignment="Center" Width="160" Header="Set Logo Color" x:Name="TileLogoColor" Margin="10" ItemsSource="{x:Bind helper:SettingsHelper.totalAppSettings.AppColors}"
                                       SelectionChanged="TileLogoColor_SelectionChanged" ToolTipService.ToolTip="Set App Tile Logo Color" ToolTipService.Placement="Top"

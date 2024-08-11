@@ -1,4 +1,6 @@
-﻿using Windows.Storage.Streams;
+﻿using System;
+
+using Windows.Storage.Streams;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -7,12 +9,16 @@ namespace appLauncher.Core.Brushes
 {
     public class PageImageBrush : XamlCompositionBrushBase
     {
+        public PageImageBrush()
+        {
+        }
+
         public PageImageBrush(IRandomAccessStream stream)
         {
             this._backImage = stream;
 
         }
-        private IRandomAccessStream _backImage;
+        public IRandomAccessStream _backImage;
         private CompositionSurfaceBrush _backImageBrush;
         private SpriteVisual spriteVisual;
         protected override void OnConnected()
@@ -45,6 +51,7 @@ namespace appLauncher.Core.Brushes
 
             CompositionBrush?.Dispose();
             CompositionBrush = null;
+            GC.WaitForPendingFinalizers();
         }
     }
 }

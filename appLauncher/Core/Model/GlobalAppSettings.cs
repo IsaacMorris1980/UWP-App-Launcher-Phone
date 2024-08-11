@@ -18,7 +18,7 @@ namespace appLauncher.Core.Model
     public class GlobalAppSettings : ModelBase
     {
         private string _appForegroundColor = "Orange";
-        private string _appBackgroundColor = "Black";
+        private string _appBackgroundColor = "Green";
         private TimeSpan _imageRotationTime = TimeSpan.FromSeconds(15);
         private int _appsPerScreen = 0;
         private int _lastPageNum = 0;
@@ -26,7 +26,14 @@ namespace appLauncher.Core.Model
         private List<ColorComboItem> _appColors = new List<ColorComboItem>();
         private IPEndPoint _remoteIP = null;
         private bool _sync = false;
-
+        private int _numofPages = 1;
+        public bool CanEnablePreLaunch
+        {
+            get
+            {
+                return Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
+            }
+        }
         public bool Sync
         {
             get
@@ -55,11 +62,17 @@ namespace appLauncher.Core.Model
         {
             MainPage.pageSizeChanged += SetPageSize;
             MainPage.pageChanged += SetPageNumber;
+            MainPage.numofPagesChanged += MainPage_numofPagesChanged;
             Package pack = Package.Current;
             PackageVersion version = new PackageVersion();
             version = pack.Id.Version;
             _appVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
 
+        }
+
+        private void MainPage_numofPagesChanged(PageNumChangedArgs e)
+        {
+            NumOfPages = e.numofpages;
         }
 
         [JsonIgnore]
@@ -74,7 +87,7 @@ namespace appLauncher.Core.Model
                 _appColors = value;
             }
         }
-
+        [JsonIgnore]
         public string AppVersion
         {
             get
@@ -84,11 +97,22 @@ namespace appLauncher.Core.Model
         }
         public void SetPageSize(PageSizeEventArgs e)
         {
-            _appsPerScreen = e.AppPageSize;
+            AppsPerPage = e.AppPageSize;
         }
         public void SetPageNumber(PageChangedEventArgs e)
         {
-            _lastPageNum = e.PageIndex;
+            LastPageNumber = e.PageIndex;
+        }
+        public int NumOfPages
+        {
+            get
+            {
+                return _numofPages;
+            }
+            set
+            {
+                _numofPages = value;
+            }
         }
         public int LastPageNumber
         {

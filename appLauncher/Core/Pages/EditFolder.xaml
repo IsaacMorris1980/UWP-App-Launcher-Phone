@@ -1,24 +1,19 @@
 ﻿<Page
-    x:Class="appLauncher.Core.Pages.Folders"
+    x:Class="appLauncher.Core.Pages.EditFolder"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:appLauncher.Core.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:helper="using:appLauncher.Core.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:helper="using:appLauncher.Core.Helpers" xmlns:models="using:appLauncher.Core.Model"
     mc:Ignorable="d"
-    xmlns:models="using:appLauncher.Core.Model"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
-
     <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <RelativePanel HorizontalAlignment="Stretch" Height="100" Margin="10"
                       VerticalAlignment="Stretch">
-                <AppBarButton Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
-                  ToolTipService.ToolTip="Return to home page" Label="Main Page" LabelPosition="Default" Margin="25,20,20,0" x:Name="HomePage" Content="Home Page" RelativePanel.AlignLeftWithPanel="True"  Icon="Home" Tapped="MainPage_Tapped"
-                
-                       />
-                <TextBlock Text="Folders"
+
+                <TextBlock 
                FontSize="36"
                FontWeight="Bold"
                Margin="16,20,0,16"
@@ -28,32 +23,11 @@
             </RelativePanel>
             <ScrollViewer Height="400" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Stretch">
-                    <TextBox x:Load="False" Width="175" x:Name="FolderName"  TextWrapping="Wrap" PlaceholderText="Enter of select folder name" />
-                    <StackPanel Margin="20" Orientation="Horizontal">
-                        <AppBarButton x:Load="False" Icon="Add" x:Name="AddFolder" Label="Add Folder" LabelPosition="Default" Tapped="AddFolder_TappedAsync" />
-                        <AppBarButton x:Load="False" Icon="Edit"  x:Name="Edits" Label="Edit Folder" LabelPosition="Default"  Tapped="Edits_Tapped" />
-                        <AppBarButton x:Load="False" Icon="Save"  x:Name="SaveEdits" Label="Save Edits" LabelPosition="Default"  Tapped="SaveEdits_Tapped" />
-                        <AppBarButton x:Load="False" Icon="Cancel" x:Name="CancelEdits" Label="Cancel Edits" LabelPosition="Default" Tapped="CancelEdits_Tapped" />
-                        <AppBarButton x:Load="False"  Icon="Delete" x:Name="RemoveFolder" Label="Remove Folder" LabelPosition="Default" Tapped="RemoveFolder_Tapped" />
-                     </StackPanel>
-                    <ScrollViewer Height="200">
-                        <ListBox x:Load="False" x:Name="Folderslist" SelectionChanged="Folderslist_SelectionChanged" ItemsSource="{x:Bind allFolders}" Width="175">
-                            <ListBox.Resources>
-                                <DataTemplate x:Key="Folderstemp" x:DataType="models:AppFolder">
-                                    <TextBlock Text="{x:Bind Name}" />
-                                </DataTemplate>
-                            </ListBox.Resources>
-                            <ListBox.ItemTemplate>
-                                <StaticResource ResourceKey="Folderstemp"/>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </ScrollViewer>
-
-                    <StackPanel Orientation="Vertical">
+                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Name="InFolder" x:Load="False" IsHitTestVisible="False" Text="In Folder" />
                             <ScrollViewer Height="250" Width="175">
-                                <ListBox x:Load="False" x:Name="AppsinFolders" Width="175" Height="200" SelectionChanged="AppsinFolders_SelectionChanged">
+                                <ListBox x:Load="False" x:Name="AppsinFolders" SelectionMode="Single" Width="175" Height="200" SelectionChanged="AppsinFolders_SelectionChanged">
                                     <ListBox.Resources>
                                         <DataTemplate x:Key="ComboTemplate1" x:DataType="models:FinalTiles">
 
@@ -85,9 +59,9 @@ TextWrapping="Wrap"
                             <AppBarButton x:Load="False" x:Name="removeApp" Margin="20,0,20,0" Height="50" Content="Remove from" Tapped="removeApp_Tapped" />
                         </StackPanel>
                         <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="AllTilesText" x:Load="False" IsHitTestVisible="False" Text="All Tiles" />
+                            <TextBlock x:Load="False" x:Name="AllTilesText" IsHitTestVisible="False" Text="All Tiles" />
                             <ScrollViewer Height="250" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                                <ListBox x:Load="False" x:Name="AllTiles" Width="175" Height="225" SelectionChanged="AllTiles_SelectionChanged">
+                                <ListBox x:Load="False" SelectionMode="Single" x:Name="AllTiles" Width="175" Height="225" SelectionChanged="AllTiles_SelectionChanged">
                                     <ListBox.Resources>
                                         <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">
 
@@ -111,11 +85,12 @@ TextWrapping="Wrap"
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </ScrollViewer>
+                            <AppBarButton x:Name="SaveButton" Icon="Save" Label="Save" Tapped="SaveButton_Tapped" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </StackPanel>
-        
+
     </Grid>
 </Page>

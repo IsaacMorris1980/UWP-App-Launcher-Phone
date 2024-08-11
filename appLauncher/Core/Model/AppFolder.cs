@@ -1,8 +1,10 @@
 ﻿using appLauncher.Core.Interfaces;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
-using System.Collections.ObjectModel;
+using System;
+using System.Collections.Generic;
 
 using Windows.UI;
 using Windows.UI.Xaml.Media;
@@ -14,9 +16,12 @@ namespace appLauncher.Core.Model
     {
         private string _name;
         private string _description;
-        private ObservableCollection<FinalTiles> _folderapps = new ObservableCollection<FinalTiles>();
+        private List<FinalTiles> _folderapps = new List<FinalTiles>();
         private Color _textcolor = Colors.Orange;
         private Color _backcolor = Colors.Black;
+        private bool _favorite = false;
+        private long _createdDate = 0;
+        private int _launchedcount = 0;
         [JsonProperty]
         public string Name
         {
@@ -31,6 +36,18 @@ namespace appLauncher.Core.Model
             set
             {
                 SetProperty(ref _name, value);
+            }
+        }
+        [JsonProperty]
+        public bool Favorite
+        {
+            get
+            {
+                return _favorite;
+            }
+            set
+            {
+                SetProperty(ref _favorite, value);
             }
         }
         [JsonProperty]
@@ -50,7 +67,7 @@ namespace appLauncher.Core.Model
             }
         }
         [JsonProperty]
-        public ObservableCollection<FinalTiles> FolderApps
+        public List<FinalTiles> FolderApps
         {
             get
             {
@@ -63,6 +80,18 @@ namespace appLauncher.Core.Model
         }
         [JsonProperty]
         public int ListPos { get; set; }
+        [JsonProperty]
+        public int LaunchedCount
+        {
+            get
+            {
+                return _launchedcount;
+            }
+            set
+            {
+                SetProperty(ref _launchedcount, value);
+            }
+        }
         [JsonIgnore]
         public SolidColorBrush TextBrush
         {
@@ -77,5 +106,17 @@ namespace appLauncher.Core.Model
         public Color TextColor { get; set; } = Colors.Red;
         [JsonProperty]
         public Color BackColor { get; set; } = Colors.Blue;
+        [JsonProperty]
+        public DateTimeOffset InstalledDate
+        {
+            get
+            {
+                return DateTimeOffset.FromUnixTimeSeconds(_createdDate);
+            }
+            set
+            {
+                SetProperty(ref _createdDate, value.ToUnixTimeSeconds());
+            }
+        }
     }
 }

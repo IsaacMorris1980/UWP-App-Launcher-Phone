@@ -18,9 +18,7 @@
      Background="Transparent">
             <RelativePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2" 
                >
-                <AppBarButton Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
-                   Label="Home" LabelPosition="Default" Margin="10,20,10,0" x:Name="MainPage" Content="Home" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignTopWithPanel="True"  Tapped="MainPage_Tapped" Icon="Home"
-                   ToolTipService.ToolTip="Navigate to Home page" />
+              
                 <TextBlock Name="appName" Margin="10,40,10,0" Text="{x:Bind displayfolder.Name}" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True"
              FontSize="16" 
              TextAlignment="Center" 
@@ -29,8 +27,7 @@
              TextTrimming="CharacterEllipsis" 
              TextWrapping="WrapWholeWords"
              Foreground="{x:Bind displayfolder.TextBrush}"/>
-                <AppBarButton Background="Transparent" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}" Margin="10,25,10,0" RelativePanel.AlignRightWithPanel="True"  Icon="Contact" Label="About" LabelPosition="Default" Tapped="AppBarButton_Tapped"
-                  ToolTipService.ToolTip="Navigate to About page" Content="About" RelativePanel.AlignTopWithPanel="True"  />
+            
 
 
 
@@ -72,11 +69,11 @@
                 </AutoSuggestBox>
 
                 <ScrollViewer Height="300" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True">
-                    <ListBox  x:Name="AppsinFolders" Width="175" Height="300" ItemsSource="{x:Bind displayfolder.FolderApps}" SelectionChanged="ListView_SelectionChanged">
+                    <ListBox x:Name="AppsinFolders" Width="175" Height="300" ItemsSource="{x:Bind displayfolder.FolderApps}" SelectionChanged="ListView_SelectionChanged">
                         <ListBox.Resources>
                             <DataTemplate x:Key="ComboTemplate1" x:DataType="models:FinalTiles">
 
-                                <Grid ToolTipService.ToolTip="{x:Bind Tip}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,10,0,10" >
+                                <Grid ToolTipService.ToolTip="{x:Bind Tip}" RightTapped="Grid_RightTapped" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,10,0,10" >
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="50" />
                                         <ColumnDefinition Width="*"/>
