@@ -35,7 +35,7 @@
             </RelativePanel>
         </DataTemplate>
         <DataTemplate x:Key="AppTemplate" x:DataType="models:FinalTiles">
-            <RelativePanel Width="64" Height="84" Margin="12" RightTapped="RelativePanel_RightTapped" >
+            <RelativePanel Width="64" Height="84" Margin="12" RightTapped="RelativePanel_RightTapped" Background="{x:Bind BackBrush}">
                 <RelativePanel.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem x:Name="Edit" Text="Edit" Tapped="Edit_Tapped" />

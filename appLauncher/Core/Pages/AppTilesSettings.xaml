@@ -4,9 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:appLauncher.Core.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:helper="using:appLauncher.Core.Helpers" xmlns:models="using:appLauncher.Core.Model"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helper="using:appLauncher.Core.Helpers" 
+    xmlns:models="using:appLauncher.Core.Model"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -25,15 +28,45 @@
               RelativePanel.AlignHorizontalCenterWithPanel="True"/>
 
         </RelativePanel>
-        <ScrollViewer Height="300" Grid.Row="1" >
+        <ScrollViewer Height="300" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
             <StackPanel  Orientation="Vertical" VerticalAlignment="Stretch" Margin="10" HorizontalAlignment="Center" >
                 <TextBlock Text="Change all apps settings"
+                           HorizontalAlignment="Center"
        FontSize="18"
        FontWeight="Bold"
        Margin="16,20,0,16"
        Name="AllAppstitleTextBlock"
        Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
       />
+                <ToggleSwitch  x:Name="AppSettings" OnContent="All Apps" OffContent="1 App" HorizontalAlignment="Center"
+                                    BorderBrush="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"      Toggled="AppSettings_Toggled" ToolTipService.ToolTip="{x:Bind AppToggleTip}"  Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}" Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"/>
+                <ComboBox Height="60" Width="160" x:Name="Appslist" PlaceholderText="Select an app" Margin="10" HorizontalAlignment="Center"
+                                              ItemsSource="{x:Bind helper:PackageHelper.Search}"
+                                          ToolTipService.ToolTip="Select an app to change settings on"    SelectionChanged="Appslist_SelectionChanged">
+                    <ComboBox.Resources>
+                        <DataTemplate x:Key="ComboTemplate" x:DataType="models:FinalTiles">
+
+                            <Grid ToolTipService.ToolTip="{x:Bind Tip}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,10,0,10" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Canvas Grid.Column="0" VerticalAlignment="Center" Background="{x:Bind LogoBrush}" Height="50" Width="50" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind Name}" 
+                                                   VerticalAlignment="Center"
+                                                   Margin="4,0,0,0"
+                                                   FontSize="16" 
+                                              TextTrimming="CharacterEllipsis"
+                                                 TextWrapping="NoWrap"
+                                                     Width="100"
+                                                   Foreground="{x:Bind TextBrush}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ComboBox.Resources>
+                    <ComboBox.ItemTemplate>
+                        <StaticResource ResourceKey="ComboTemplate" />
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
 
                 <ComboBox  HorizontalAlignment="Center" Width="160" Header="Set Logo Color" x:Name="TileLogoColor" Margin="10" ItemsSource="{x:Bind helper:SettingsHelper.totalAppSettings.AppColors}"
               SelectionChanged="TileLogoColor_SelectionChanged" ToolTipService.ToolTip="Set App Tile Logo Color" ToolTipService.Placement="Top"

@@ -66,7 +66,7 @@
                 <Slider Margin="10" Width="160" Header="Set Back Opacity" ToolTipService.ToolTip="Set Application Background Opacity" ToolTipService.Placement="Top" Minimum="0" Maximum="10" StepFrequency="1" TickFrequency="1" TickPlacement="BottomRight" x:Name="ApplicationBackOpacity" ValueChanged="ApplicationBackOpacity_ValueChanged"
                         />
 
-                <TextBox x:Name="ChangeTime" HorizontalAlignment="Center" ToolTipService.ToolTip="Change Image Rotation Time in seconds"/>
+                <TextBox x:Name="ChangeTime" HorizontalAlignment="Center" ToolTipService.ToolTip="Change Image Rotation Time in seconds" />
                 <AppBarButton Width="200" HorizontalAlignment="Center" Icon="SaveLocal" Label="Save Settings" x:Name="SaveSettings"
                           Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
                           Background="{x:Bind helper:SettingsHelper.totalAppSettings.AppBackgroundColorBrush}"

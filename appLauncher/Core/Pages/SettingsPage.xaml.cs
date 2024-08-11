@@ -161,11 +161,7 @@ namespace appLauncher.Core.Pages
 
         }
 
-        private void AboutPage_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(AboutPage));
-        }
-
+      
 
 
 
