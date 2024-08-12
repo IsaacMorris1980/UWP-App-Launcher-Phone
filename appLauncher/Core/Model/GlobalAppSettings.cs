@@ -1,5 +1,5 @@
 ﻿using appLauncher.Core.CustomEvent;
-using appLauncher.Core.Helpers;
+using appLauncher.Core.Pages;
 
 using Microsoft.Toolkit.Uwp.Helpers;
 
@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 using Windows.ApplicationModel;
 using Windows.UI;
@@ -17,127 +18,63 @@ namespace appLauncher.Core.Model
     public class GlobalAppSettings : ModelBase
     {
         private string _appForegroundColor = "Orange";
-        private string _appBackgroundColor = "Black";
+        private string _appBackgroundColor = "Green";
         private TimeSpan _imageRotationTime = TimeSpan.FromSeconds(15);
         private int _appsPerScreen = 0;
         private int _lastPageNum = 0;
         private string _appVersion = string.Empty;
-        private bool _showApps = false;
         private List<ColorComboItem> _appColors = new List<ColorComboItem>();
-        private bool _search = false;
-        private bool _filter = false;
-        private bool _images = false;
-        private bool _tiles = false;
-        private bool _appSettings = false;
-        public readonly string MeasurementID = "G-WV43RHFPXN";
-        public readonly string APISecret = "iVAKVkeZQ1CNQi4ONEOo9Q";
-        private string _client_id;
-        private bool reporting = false;
-
-        public bool DisplaySettings
+        private IPEndPoint _remoteIP = null;
+        private bool _sync = false;
+        private int _numofPages = 1;
+        public bool CanEnablePreLaunch
         {
             get
             {
-                if (Tiles || Images || AppSettings)
-                {
-                    return true;
-                }
-                return false;
+                return Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
             }
         }
-        public bool Reporting
+        public bool Sync
         {
             get
             {
-                return reporting;
+                return _sync;
             }
             set
             {
-                reporting = value;
+                _sync = value;
             }
         }
-        public string ClientID
+        [JsonIgnore]
+        public IPEndPoint RemoteIP
         {
             get
             {
-                if (string.IsNullOrEmpty(_client_id))
-                {
-                    return Guid.NewGuid().ToString();
-                }
-                return _client_id;
+                return _remoteIP;
             }
             set
             {
-                _client_id = value;
+                _remoteIP = value;
             }
         }
-
 
         public GlobalAppSettings()
         {
-            GlobalVariables.NumofApps += SetPageSize;
-            GlobalVariables.PageNumChanged += SetPageNumber;
+            MainPage.pageSizeChanged += SetPageSize;
+            MainPage.pageChanged += SetPageNumber;
+            MainPage.numofPagesChanged += MainPage_numofPagesChanged;
             Package pack = Package.Current;
             PackageVersion version = new PackageVersion();
             version = pack.Id.Version;
             _appVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
 
         }
-        public bool Search
+
+        private void MainPage_numofPagesChanged(PageNumChangedArgs e)
         {
-            get
-            {
-                return _search;
-            }
-            set
-            {
-                SetProperty(ref _search, value);
-            }
+            NumOfPages = e.numofpages;
         }
-        public bool Filter
-        {
-            get
-            {
-                return _filter;
-            }
-            set
-            {
-                SetProperty(ref _filter, value);
-            }
-        }
-        public bool Images
-        {
-            get
-            {
-                return _images;
-            }
-            set
-            {
-                SetProperty(ref _images, value);
-            }
-        }
-        public bool Tiles
-        {
-            get
-            {
-                return _tiles;
-            }
-            set
-            {
-                SetProperty(ref _tiles, value);
-            }
-        }
-        public bool AppSettings
-        {
-            get
-            {
-                return _appSettings;
-            }
-            set
-            {
-                SetProperty(ref _appSettings, value);
-            }
-        }
+
         [JsonIgnore]
         public List<ColorComboItem> AppColors
         {
@@ -150,17 +87,7 @@ namespace appLauncher.Core.Model
                 _appColors = value;
             }
         }
-        public bool ShowApps
-        {
-            get
-            {
-                return _showApps;
-            }
-            set
-            {
-                SetProperty(ref _showApps, value);
-            }
-        }
+        [JsonIgnore]
         public string AppVersion
         {
             get
@@ -168,13 +95,24 @@ namespace appLauncher.Core.Model
                 return _appVersion;
             }
         }
-        public void SetPageSize(AppPageSizeChangedEventArgs e)
+        public void SetPageSize(PageSizeEventArgs e)
         {
-            _appsPerScreen = e.AppPageSize;
+            AppsPerPage = e.AppPageSize;
         }
         public void SetPageNumber(PageChangedEventArgs e)
         {
-            _lastPageNum = e.PageIndex;
+            LastPageNumber = e.PageIndex;
+        }
+        public int NumOfPages
+        {
+            get
+            {
+                return _numofPages;
+            }
+            set
+            {
+                _numofPages = value;
+            }
         }
         public int LastPageNumber
         {

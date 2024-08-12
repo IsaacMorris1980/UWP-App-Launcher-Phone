@@ -1,7 +1,5 @@
 ﻿using appLauncher.Core.Model;
 
-using GoogleAnalyticsv4SDK.Events.Mobile;
-
 using Microsoft.Toolkit.Uwp.Helpers;
 
 using Newtonsoft.Json;
@@ -47,12 +45,7 @@ namespace appLauncher.Core.Helpers
                 }
                 catch (Exception es)
                 {
-                    if (SettingsHelper.totalAppSettings.Reporting)
-                    {
-                        ((App)Application.Current).reportEvents.Add(new Execeptions(es));
-                        ((App)Application.Current).reportCrashandAnalytics.SendEvent(((App)Application.Current).reportEvents, SettingsHelper.totalAppSettings.ClientID, false);
-                        ((App)Application.Current).reportEvents.Clear();
-                    }
+
                 }
             }
             else
@@ -71,16 +64,12 @@ namespace appLauncher.Core.Helpers
             }
             catch (Exception es)
             {
-                if (SettingsHelper.totalAppSettings.Reporting)
-                {
-                    ((App)Application.Current).reportEvents.Add(new Execeptions(es));
-                    ((App)Application.Current).reportCrashandAnalytics.SendEvent(((App)Application.Current).reportEvents, SettingsHelper.totalAppSettings.ClientID, false);
-                    ((App)Application.Current).reportEvents.Clear();
-                }
+
             }
         }
         public static List<ColorComboItem> GetStaticPropertyBag(Type t)
         {
+
             const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             List<ColorComboItem> map = new List<ColorComboItem>();
             foreach (var prop in t.GetProperties(flags))
@@ -92,6 +81,26 @@ namespace appLauncher.Core.Helpers
             }
             return map;
         }
+        public static ColorComboItem MatchColor(Color c)
+        {
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            Type t = typeof(Colors);
+            List<ColorComboItem> a = GetStaticPropertyBag(typeof(Colors));
+            ColorComboItem colorItem = new ColorComboItem();
+            foreach (var prop in t.GetProperties(flags))
+            {
+                if (prop.Name.ToColor() == c)
+                {
+
+                    colorItem.ColorName = prop.Name;
+                    colorItem.ColorBrush = new Windows.UI.Xaml.Media.SolidColorBrush(prop.Name.ToColor());
+
+                }
+
+
+            }
+            return colorItem;
+        }
         public static void SetApplicationResources()
         {
             Application.Current.Resources["AppBarButtonForegroundPointerOver"] = SettingsHelper.totalAppSettings.AppForegroundColorBrush;
@@ -102,5 +111,6 @@ namespace appLauncher.Core.Helpers
             Application.Current.Resources["ComboBoxDropDownBackground"] = SettingsHelper.totalAppSettings.AppBackgroundColorBrush;
             Application.Current.Resources["ComboBoxPlaceHolderForeground"] = SettingsHelper.totalAppSettings.AppForegroundColorBrush;
         }
+
     }
 }

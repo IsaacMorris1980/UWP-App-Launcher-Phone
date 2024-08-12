@@ -23,7 +23,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
-    <PackageCertificateThumbprint>04EF6B3110633A73DA71B226F2F9BFED9D76B8E6</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2EF85269F695DBBBD1E755CC2665ED2B025C4235</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -40,6 +40,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -52,6 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -63,6 +65,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -75,6 +78,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -86,6 +90,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -98,6 +103,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <CodeAnalysisRuleSet>appLauncher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
@@ -110,41 +116,90 @@
     <Compile Include="Core\Brushes\MaskedBrush.cs" />
     <Compile Include="Core\Brushes\PageImageBrush.cs" />
     <Compile Include="Core\CustomEvent\CustomEvents.cs" />
+    <Compile Include="Core\DataTemplateSelectors\ApporFolderTemplateSelector.cs" />
     <Compile Include="Core\Enums\DeviceType.cs" />
-    <Compile Include="Core\Helpers\GlobalVariables.cs" />
+    <Compile Include="Core\Extensions\ExtentionsMethods.cs" />
+    <Compile Include="Core\Helpers\Logging.cs" />
     <Compile Include="Core\Helpers\ImageHelper.cs" />
+    <Compile Include="Core\Helpers\InstallorRemoveApplication.cs" />
     <Compile Include="Core\Helpers\PackageHelper.cs" />
     <Compile Include="Core\Helpers\SettingsHelper.cs" />
-    <Compile Include="Core\Model\AppTiles.cs" />
+    <Compile Include="Core\Interfaces\IApporFolder.cs" />
+    <Compile Include="Core\Model\AppFolder.cs" />
     <Compile Include="Core\Model\ColorComboItem.cs" />
-    <Compile Include="Core\Model\DisplayImages.cs" />
     <Compile Include="Core\Model\DraggedItem.cs" />
+    <Compile Include="Core\Model\FinalTiles.cs" />
     <Compile Include="Core\Model\GlobalAppSettings.cs" />
     <Compile Include="Core\Model\ModelBase.cs" />
     <Compile Include="Core\Model\PageBackgrounds.cs" />
     <Compile Include="Core\Model\PageChangingVariables.cs" />
     <Compile Include="Core\Model\AppPaginationObservableCollection.cs" />
+    <Compile Include="Core\Model\PageIndicators.cs" />
     <Compile Include="Core\Pages\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Pages\EnableFeatures.xaml.cs">
-      <DependentUpon>EnableFeatures.xaml</DependentUpon>
+    <Compile Include="Core\Pages\AppBackgroundSettings.xaml.cs">
+      <DependentUpon>AppBackgroundSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppInformation.xaml.cs">
+      <DependentUpon>AppInformation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppLoading.xaml.cs">
+      <DependentUpon>AppLoading.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppSettings.xaml.cs">
+      <DependentUpon>AppSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppsListPage.xaml.cs">
+      <DependentUpon>AppsListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\AppTilesSettings.xaml.cs">
+      <DependentUpon>AppTilesSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\CreateFolders.xaml.cs">
+      <DependentUpon>CreateFolders.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\EditApp.xaml.cs">
+      <DependentUpon>EditApp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\EditFolder.xaml.cs">
+      <DependentUpon>EditFolder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\FirstPage.xaml.cs">
+      <DependentUpon>FirstPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\FolderInfo.xaml.cs">
+      <DependentUpon>FolderInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\FolderNamePage.xaml.cs">
+      <DependentUpon>FolderNamePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\RemoveFolder.xaml.cs">
+      <DependentUpon>RemoveFolder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\FolderView.xaml.cs">
+      <DependentUpon>FolderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Pages\InstallApps.xaml.cs">
+      <DependentUpon>InstallApps.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Pages\RemoveApps.xaml.cs">
+      <DependentUpon>RemoveApps.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Serializers\ApporFolderSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Pages\splashScreen.xaml.cs">
-      <DependentUpon>splashScreen.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="appLauncher.ruleset" />
     <None Include="appLauncher_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -205,7 +260,63 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Pages\EnableFeatures.xaml">
+    <Page Include="Core\Pages\AppBackgroundSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppInformation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppLoading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppsListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AppTilesSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\CreateFolders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\EditApp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\EditFolder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\FirstPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\FolderInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\FolderNamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\RemoveFolder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\FolderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\InstallApps.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,18 +324,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Core\Pages\SettingsPage.xaml">
+    <Page Include="Core\Pages\RemoveApps.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Pages\splashScreen.xaml">
+    <Page Include="Core\Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.1</Version>
+      <Version>6.2.14</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Animations">
       <Version>2.1.0</Version>
@@ -237,10 +348,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GoogleAnalyticsv4SDK, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\GoogleAnalyticsv4SDKForUWP\GoogleAnalyticsv4SDK\bin\Release\GoogleAnalyticsv4SDK.dll</HintPath>
-    </Reference>
+    <Folder Include="Core\UserControls\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -1,5 +1,8 @@
 ﻿using appLauncher.Core.CustomEvent;
+using appLauncher.Core.Extensions;
 using appLauncher.Core.Helpers;
+using appLauncher.Core.Interfaces;
+using appLauncher.Core.Pages;
 
 using System;
 using System.Collections.Generic;
@@ -9,42 +12,124 @@ using System.Linq;
 namespace appLauncher.Core.Model
 {
     [Serializable]
-    public class AppPaginationObservableCollection : ObservableCollection<AppTiles>
+    public class AppPaginationObservableCollection : ObservableCollection<IApporFolder>
     {
-        private ObservableCollection<AppTiles> originalCollection;
+        private ObservableCollection<IApporFolder> originalCollection;
         [NonSerialized]
-        private int _page;
-        [NonSerialized]
-        private int _countPerPage;
-        private int _startIndex;
-        private int _endIndex;
+        private int _countPerPage = 1;
+        private int _selectedPage = 0;
+        private bool _searched = false;
+        private string _searchText = string.Empty;
+        private ObservableCollection<IApporFolder> SearchList;
 
-        public AppPaginationObservableCollection(IEnumerable<AppTiles> collection) : base(collection)
+        public AppPaginationObservableCollection(IEnumerable<IApporFolder> collection) : base(collection)
         {
-
-            _page = SettingsHelper.totalAppSettings.LastPageNumber;
+            _selectedPage = SettingsHelper.totalAppSettings.LastPageNumber;
             _countPerPage = SettingsHelper.totalAppSettings.AppsPerPage;
-            _startIndex = _page * _countPerPage;
-            _endIndex = _startIndex + _countPerPage;
-            originalCollection = new ObservableCollection<AppTiles>(collection);
+            originalCollection = new ObservableCollection<IApporFolder>(collection);
+            SearchList = new ObservableCollection<IApporFolder>(collection);
+            MainPage.pageChanged += PageChanged;
+            MainPage.pageSizeChanged += SizedChanged;
+            FirstPage.pageChanged += PageChanged;
             RecalculateThePageItems();
-            GlobalVariables.PageNumChanged += PageChanged;
-            GlobalVariables.NumofApps += SizedChanged;
         }
-
-        private void RecalculateThePageItems()
+        public void RecalculateThePageItems()
         {
-            ClearItems();
 
 
-            for (int i = _startIndex; i < _endIndex; i++)
+            if (!_searched)
             {
-                if (originalCollection.Count > i)
-                    base.InsertItem(i - _startIndex, originalCollection[i]);
+
+
+
+                ClearItems();
+                var listofApps = originalCollection.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
+
+                foreach (var item in listofApps)
+                {
+
+                    base.Add(item);
+                }
             }
+            else
+            {
+                ClearItems();
+
+                var searchlist = SearchList.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
+                foreach (var item in searchlist)
+                {
+                    base.Add(item);
+                }
+
+            }
+            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
+
         }
 
-        public int GetIndexApp(AppTiles app)
+        public void AddFolder(AppFolder folder)
+        {
+            if (originalCollection.Any(x => x.Name == folder.Name))
+            {
+                return;
+            }
+            originalCollection.Add(folder);
+            RecalculateThePageItems();
+        }
+        public void UpdateApp(FinalTiles tiles)
+        {
+            List<FinalTiles> apps = originalCollection.OfType<FinalTiles>().ToList();
+            List<AppFolder> folders = originalCollection.OfType<AppFolder>().ToList();
+            if (apps.Any(x => x.FullName == tiles.FullName))
+            {
+                apps[apps.FindIndex(x => x.FullName == tiles.FullName)] = tiles;
+            }
+            foreach (var item in folders)
+            {
+                if (item.FolderApps.Any(x => x.Name == tiles.Name))
+                {
+                    int index = item.FolderApps.FindIndex(x => x.FullName == tiles.FullName);
+                    item.FolderApps[index] = tiles;
+                }
+
+            }
+            List<IApporFolder> lists = new List<IApporFolder>();
+            lists.AddRange(apps);
+            lists.AddRange(folders);
+            originalCollection = new ObservableCollection<IApporFolder>(lists.OrderBy(x => x.Name));
+            RecalculateThePageItems();
+        }
+        public void UpdateFolder(AppFolder folder)
+        {
+            List<FinalTiles> apps = originalCollection.OfType<FinalTiles>().ToList();
+            List<AppFolder> folders = originalCollection.OfType<AppFolder>().ToList();
+            if (folders.Any(x => x.Name == folder.Name))
+            {
+                int index = folders.IndexOf(folders.First(x => x.Name == folder.Name));
+                folders[index] = folder;
+
+            }
+            List<IApporFolder> lists = new List<IApporFolder>();
+            lists.AddRange(apps);
+            lists.AddRange(folders);
+            originalCollection = new ObservableCollection<IApporFolder>();
+            RecalculateThePageItems();
+        }
+        public void Search(string searchText)
+        {
+            if (string.IsNullOrEmpty(searchText))
+            {
+                _searched = false;
+                PageChanged(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
+            }
+            else
+            {
+                _searched = true;
+                SearchList = new ObservableCollection<IApporFolder>(originalCollection.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
+                PageChanged(new PageChangedEventArgs(0));
+            }
+            RecalculateThePageItems();
+        }
+        public int GetIndexApp(IApporFolder app)
         {
             return originalCollection.IndexOf(app);
         }
@@ -52,104 +137,179 @@ namespace appLauncher.Core.Model
         {
             originalCollection.Move(initailindex, newindex);
             RecalculateThePageItems();
-            this.OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
-
+        }
+        public void ChangePage(int page)
+        {
+            _selectedPage = page;
+            RecalculateThePageItems();
         }
         public void GetFilteredApps(string selected)
         {
 
-            List<AppTiles> orderList;
+            List<IApporFolder> orderList;
+            List<FinalTiles> apptiles;
+            List<AppFolder> appfolders;
             switch (selected)
             {
-                case "AppAZ":
+                case "alphaAZ":
                     orderList = originalCollection.OrderBy(y => y.Name).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                    for (int i = 0; i < orderList.Count(); i++)
+                    {
+                        orderList[i].ListPos = i;
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "AppZA":
+                case "alphaZA":
                     orderList = originalCollection.OrderByDescending(y => y.Name).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                    for (int i = 0; i < orderList.Count(); i++)
+                    {
+                        orderList[i].ListPos = i;
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "DevAZ":
-                    orderList = originalCollection.OrderBy(x => x.Developer).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                case "devAZ":
+                    apptiles = originalCollection.OfType<FinalTiles>().ToList();
+                    appfolders = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> a = apptiles.OrderBy(x => x.Developer).ToList();
+                    orderList = new List<IApporFolder>();
+                    orderList.AddRange(a);
+                    orderList.AddRange(appfolders);
+                    for (int i = 0; i < orderList.Count; i++)
+                    {
+                        if (orderList[i].GetType() == typeof(FinalTiles))
+                        {
+                            orderList[i].ListPos = i;
+                        }
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "DevZA":
-                    orderList = originalCollection.OrderByDescending(x => x.Developer).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                case "devZA":
+                    apptiles = originalCollection.OfType<FinalTiles>().ToList();
+                    appfolders = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> TilesbyDeveloperName = apptiles.OrderByDescending(x => x.Developer).ToList();
+                    orderList = new List<IApporFolder>();
+                    orderList.AddRange(TilesbyDeveloperName);
+                    orderList.AddRange(appfolders);
+                    for (int i = 0; i < orderList.Count; i++)
+                    {
+                        if (orderList[i].GetType() == typeof(FinalTiles))
+                        {
+                            orderList[i].ListPos = i;
+                        }
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "InstalledNewest":
-                    orderList = originalCollection.OrderByDescending(x => x.InstalledDate).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                case "installNewest":
+                    apptiles = originalCollection.OfType<FinalTiles>().ToList();
+                    appfolders = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> TilesbyInstalledDate = apptiles.OrderBy(x => x.InstalledDate).ToList();
+                    orderList = new List<IApporFolder>();
+                    orderList.AddRange(TilesbyInstalledDate);
+                    orderList.AddRange(appfolders);
+                    for (int i = 0; i < orderList.Count; i++)
+                    {
+                        if (orderList[i].GetType() == typeof(FinalTiles))
+                        {
+                            orderList[i].ListPos = i;
+                        }
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "InstalledOldest":
-                    orderList = originalCollection.OrderBy(x => x.InstalledDate).ToList();
-                    originalCollection = new ObservableCollection<AppTiles>(orderList);
+                case "installOldest":
+                    apptiles = originalCollection.OfType<FinalTiles>().ToList();
+                    appfolders = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> TilesbyInstalledDates = apptiles.OrderByDescending(x => x.InstalledDate).ToList();
+                    orderList = new List<IApporFolder>();
+                    orderList.AddRange(TilesbyInstalledDates);
+                    orderList.AddRange(appfolders);
+                    for (int i = 0; i < orderList.Count; i++)
+                    {
+                        if (orderList[i].GetType() == typeof(FinalTiles))
+                        {
+                            orderList[i].ListPos = i;
+                        }
+                    }
+                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
                 default:
                     return;
             }
             RecalculateThePageItems();
-            this.OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
         }
-        protected override void InsertItem(int index, AppTiles item)
-        {
-            //Check if the Index is with in the current Page then add to the collection as bellow. And add to the originalCollection also
-            if ((index >= _startIndex) && (index < _endIndex))
-            {
-                base.InsertItem(index - _startIndex, item);
-                if (Count > _countPerPage)
-                    base.RemoveItem(_endIndex);
-            }
-            if (index >= Count)
-                originalCollection.Add(item);
-            else
-                originalCollection.Insert(index, item);
-        }
-        protected override void RemoveItem(int index)
-        {
-            int startIndex = _page * _countPerPage;
-            int endIndex = startIndex + _countPerPage;
-            //Check if the Index is with in the current Page range then remove from the collection as bellow. And remove from the originalCollection also
-            if ((index >= startIndex) && (index < endIndex))
-            {
-                this.RemoveAt(index - startIndex);
-                if (Count <= _countPerPage)
-                    base.InsertItem(endIndex - 1, originalCollection[index + 1]);
-            }
-            originalCollection.RemoveAt(index);
-        }
-        public ObservableCollection<AppTiles> GetOriginalCollection()
+        public ObservableCollection<IApporFolder> GetOriginalCollection()
         {
             return originalCollection;
         }
+        public void RemoveApp(string fullname, bool inFolder = false)
+        {
+            List<IApporFolder> finallist = new List<IApporFolder>();
+            if (!inFolder)
+            {
+                List<FinalTiles> removeapp = originalCollection.OfType<FinalTiles>().ToList();
+                removeapp.Remove(x => x.FullName == fullname);
+                finallist.AddRange(removeapp);
+                finallist.AddRange(originalCollection.OfType<AppFolder>().ToList());
+                originalCollection.Clear();
+                originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name));
+                FirstPage.showMessage.Show("App removed", 1000);
+                return;
+
+            }
+            else
+            {
+                List<AppFolder> folders = originalCollection.OfType<AppFolder>().ToList();
+                foreach (AppFolder item in folders)
+                {
+                    if (item.FolderApps.Any(x => x.FullName == fullname))
+                    {
+                        item.FolderApps.Remove(x => x.FullName == fullname);
+                    }
+                    finallist.Add(item);
+                }
+                finallist.AddRange(originalCollection.OfType<FinalTiles>().ToList());
+                originalCollection.Clear();
+                originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name));
+
+            }
+
+            RecalculateThePageItems();
+        }
+        public void Removefolder(AppFolder folder)
+        {
+            List<IApporFolder> finallist = new List<IApporFolder>();
+            List<FinalTiles> folderapps = new List<FinalTiles>();
+            List<FinalTiles> removeapp = originalCollection.OfType<FinalTiles>().ToList();
+            List<AppFolder> removeappfromfolder = originalCollection.OfType<AppFolder>().ToList();
+
+            if (removeappfromfolder.Any(x => x.Name == folder.Name))
+            {
+                AppFolder a = removeappfromfolder.First(x => x.Name == folder.Name);
+                folderapps = a.FolderApps;
+                removeapp.AddRange(folderapps);
+                removeappfromfolder.Remove(x => x.Name == folder.Name);
+            }
+            finallist.AddRange(removeapp);
+            finallist.AddRange(removeappfromfolder);
+            originalCollection.Clear();
+            originalCollection = new ObservableCollection<IApporFolder>(finallist.OrderBy(x => x.Name).ToList());
+            RecalculateThePageItems();
+        }
         public void PageChanged(PageChangedEventArgs e)
         {
-            _page = e.PageIndex;
-            _startIndex = _page * _countPerPage;
-            _endIndex = _startIndex + _countPerPage;
-            RecalculateThePageItems();
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
-        }
-        public void SizedChanged(AppPageSizeChangedEventArgs e)
-        {
-            _countPerPage = e.AppPageSize;
-            _startIndex = _page * _countPerPage;
-            _endIndex = _startIndex + _countPerPage;
-            RecalculateThePageItems();
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
-        }
-    }
-    public static class ExtensionMethods
-    {
-        public static int Remove<T>(
-            this ObservableCollection<T> coll, Func<T, bool> condition)
-        {
-            var itemsToRemove = coll.Where(condition).ToList();
-            foreach (var itemToRemove in itemsToRemove)
+            if (e.PageIndex != _selectedPage)
             {
-                coll.Remove(itemToRemove);
+                _selectedPage = e.PageIndex;
+                RecalculateThePageItems();
             }
-            return itemsToRemove.Count;
         }
+        public void SizedChanged(PageSizeEventArgs e)
+        {
+            if (e.AppPageSize != _countPerPage)
+            {
+                _countPerPage = e.AppPageSize;
+                RecalculateThePageItems();
+            }
+        }
+
     }
 }

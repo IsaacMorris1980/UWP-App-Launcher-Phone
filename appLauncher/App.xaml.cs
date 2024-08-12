@@ -1,19 +1,13 @@
 ﻿using appLauncher.Core.Helpers;
 using appLauncher.Core.Pages;
-
-using GoogleAnalyticsv4SDK.Events.Mobile;
-using GoogleAnalyticsv4SDK.Interfaces;
-
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Networking.Connectivity;
 using Windows.Storage;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -28,9 +22,8 @@ namespace appLauncher
     sealed partial class App : Application
     {
         public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-        public List<IEvent> reportEvents;
-        public GoogleAnalyticsv4SDK.Helpers.GoogleAnalyticsEndpoints reportCrashandAnalytics;
-
+        private bool isnetworkstatuschangedregistered = false;
+        private NetworkStatusChangedEventHandler networkstatuschangedhandler;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -44,27 +37,52 @@ namespace appLauncher
 
         }
 
-        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            //    Dictionary<string, string> result = new Dictionary<string, string>();
-            //    result.Add("UnhandedExceptionmessage", e.Exception.Message);
-            //    result.Add("StackTrace", e.Exception.StackTrace);
-            //    result.Add("TargetSite", e.Exception.TargetSite.Name);
-            //    result.Add("ExceptionSource", e.Exception.Source);
-            //    result.AddRange((IEnumerable<KeyValuePair<string, string>>)e.Exception.Data);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            result.Add("UnhandedExceptionmessage", e.Exception.Message);
+            result.Add("StackTrace", e.Exception.StackTrace);
+            result.Add("ExceptionSource", e.Exception.Source);
+            result.Add("More Data", e.Exception.Data.ToString());
+
+            try
+            {
+
+                string saveappsstring = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                StorageFile appsFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("backgroundunhandlederrors.json", CreationCollisionOption.OpenIfExists);
+                await FileIO.WriteTextAsync(appsFile, saveappsstring);
+
+
+            }
+            catch (Exception es)
+            {
+
+            }
 
         }
 
-        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        private async void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            //Dictionary<string, string> result = new Dictionary<string, string>();
-            //result.Add("Unhandedmessage", e.Message);
-            //result.Add("UnhandedExceptionmessage", e.Exception.Message);
-            //result.Add("StackTrace", e.Exception.StackTrace);
-            //result.Add("TargetSite", e.Exception.TargetSite.Name);
-            //result.Add("ExceptionSource", e.Exception.Source);
-            //result.AddRange((IEnumerable<KeyValuePair<string, string>>)e.Exception.Data);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            result.Add("UnhandedExceptionmessage", e.Exception.Message);
+            result.Add("StackTrace", e.Exception.StackTrace);
+            result.Add("ExceptionSource", e.Exception.Source);
+            result.Add("More Data", e.Exception.Data.ToString());
+            try
+            {
 
+                string saveappsstring = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                StorageFile appsFile = (StorageFile)await ApplicationData.Current.LocalFolder.CreateFileAsync("unhandlederrors.json", CreationCollisionOption.OpenIfExists);
+                await FileIO.WriteTextAsync(appsFile, saveappsstring);
+
+
+            }
+            catch (Exception es)
+            {
+
+            }
         }
 
 
@@ -78,21 +96,10 @@ namespace appLauncher
 
             try
             {
-                bool canEnablePrelaunch = Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.ApplicationModel.Core.CoreApplication", "EnablePrelaunch");
-
 
 
                 //Extends view into status bar/title bar, depending on the device used.
                 await SettingsHelper.LoadAppSettingsAsync();
-                reportCrashandAnalytics = new GoogleAnalyticsv4SDK.Helpers.GoogleAnalyticsEndpoints(SettingsHelper.totalAppSettings.APISecret, SettingsHelper.totalAppSettings.MeasurementID);
-                reportEvents = new List<IEvent>();
-                reportEvents.Add(new ScreenView("App Launching", null));
-                reportCrashandAnalytics.SendEvent(reportEvents, SettingsHelper.totalAppSettings.ClientID, true);
-                reportEvents.Clear();
-                ApplicationView appView = ApplicationView.GetForCurrentView();
-                appView.SetPreferredMinSize(new Size(360, 360));
-                appView.SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-                IObservableMap<string, string> qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
                 SettingsHelper.SetApplicationResources();
 
 
@@ -112,15 +119,13 @@ namespace appLauncher
                     Window.Current.Content = rootFrame;
                     if (e.PreviousExecutionState != ApplicationExecutionState.Running)
                     {
-                        bool loadState = (e.PreviousExecutionState == ApplicationExecutionState.Terminated);
-                        splashScreen extendedSplash = new splashScreen(e.SplashScreen, loadState, ref rootFrame);
-                        rootFrame.Content = extendedSplash;
+                        rootFrame.Content = new FirstPage();
                         Window.Current.Content = rootFrame;
                     }
                 }
                 if (e.PrelaunchActivated == false)
                 {
-                    if (canEnablePrelaunch)
+                    if (SettingsHelper.totalAppSettings.CanEnablePreLaunch)
                     {
                         TryEnablePrelaunch();
                     }
@@ -129,7 +134,7 @@ namespace appLauncher
                         // When the navigation stack isn't restored navigate to the first page,
                         // configuring the new page by passing required information as a navigation
                         // parameter
-                        rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                        rootFrame.Navigate(typeof(FirstPage), e.Arguments);
                     }
                     // Ensure the current window is active
                     Window.Current.Activate();
@@ -140,6 +145,8 @@ namespace appLauncher
 
             }
         }
+
+
 
         private void TryEnablePrelaunch()
         {
