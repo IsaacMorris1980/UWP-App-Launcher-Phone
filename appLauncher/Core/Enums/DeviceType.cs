@@ -6,4 +6,13 @@
         Desktop,
         Other
     }
+    public enum FilterType
+    {
+        alphaAZ,
+        alphaZA,
+        devAZ,
+        devZA,
+        newest,
+        oldest
+    }
 }

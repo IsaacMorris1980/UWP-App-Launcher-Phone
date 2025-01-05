@@ -369,35 +369,35 @@ namespace appLauncher.Core.Pages
             ((AppBarButton)sender).ContextFlyout.ShowAt((AppBarButton)sender);
         }
 
-        private void AlphaAZ_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("AppAZ");
-        }
+        //private void AlphaAZ_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("AppAZ");
+        //}
 
-        private void AlphaZA_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("AppZA");
-        }
+        //private void AlphaZA_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("AppZA");
+        //}
 
-        private void DevAZ_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("DevAZ");
-        }
+        //private void DevAZ_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("DevAZ");
+        //}
 
-        private void DevZA_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("DevZA");
-        }
+        //private void DevZA_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("DevZA");
+        //}
 
-        private void InstalledNewest_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("InstalledNewest");
-        }
+        //private void InstalledNewest_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("InstalledNewest");
+        //}
 
-        private void InstalledOldest_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            PackageHelper.Apps.GetFilteredApps("InstalledOldest");
-        }
+        //private void InstalledOldest_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    PackageHelper.Apps.GetFilteredApps("InstalledOldest");
+        //}
 
 
 

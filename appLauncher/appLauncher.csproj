@@ -23,7 +23,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
-    <PackageCertificateThumbprint>2EF85269F695DBBBD1E755CC2665ED2B025C4235</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>7091153EF3C1AD187D3679FF1694C7D4EDB579C2</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -150,9 +150,6 @@
     <Compile Include="Core\Pages\AppSettings.xaml.cs">
       <DependentUpon>AppSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Pages\AppsListPage.xaml.cs">
-      <DependentUpon>AppsListPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Core\Pages\AppTilesSettings.xaml.cs">
       <DependentUpon>AppTilesSettings.xaml</DependentUpon>
     </Compile>
@@ -273,10 +270,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Core\Pages\AppSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Core\Pages\AppsListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

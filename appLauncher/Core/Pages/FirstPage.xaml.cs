@@ -13,6 +13,7 @@ using System.Linq;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -50,6 +51,8 @@ namespace appLauncher.Core.Pages
         private int _numOfPages;
         public static event PageChangedDelegate pageChanged;
         public static event PageNumChangedDelegate pageNumChanged;
+        private ObservableCollection<string> filters = new ObservableCollection<string>();
+
         public FirstPage()
         {
             this.InitializeComponent();
@@ -61,6 +64,12 @@ namespace appLauncher.Core.Pages
             PackageHelper.pageVariables = new PageChangingVariables();
             pageChanged += FirstPage_pageChanged;
             navFrame.Navigating += NavFrame_Navigating;
+            filters.Add("Apps A-Z");
+            filters.Add("Apps Z-A");
+            filters.Add("Dev A-Z");
+            filters.Add("Dev Z-A");
+            filters.Add("Installed Newest First");
+            filters.Add("Installed Oldest First");
         }
         private void NavFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
@@ -110,7 +119,7 @@ namespace appLauncher.Core.Pages
         }
         private void SettingsButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ((FontIcon)sender).ContextFlyout.ShowAt(((FontIcon)sender));
+       ((FontIcon)sender).ContextFlyout.ShowAt(((FontIcon)sender));
         }
         private void AboutButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -118,7 +127,7 @@ namespace appLauncher.Core.Pages
         }
         private void FilterApps_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ((FontIcon)sender).ContextFlyout.ShowAt(((FontIcon)sender));
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
         }
         private void Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -177,29 +186,9 @@ namespace appLauncher.Core.Pages
         }
         private void FilterAppsAndFolders(object sender, TappedRoutedEventArgs e)
         {
-            PackageHelper.Apps.GetFilteredApps(((MenuFlyoutItem)sender).Tag.ToString());
+          PackageHelper.Apps.GetFilteredApps(((MenuFlyoutItem)sender).Tag.ToString());
         }
-        private async void CreateRemoveFolders(object sender, TappedRoutedEventArgs e)
-        {
-            switch (((MenuFlyoutItem)sender).Tag)
-            {
-                case "Create":
-                    AppFolder _createdFolder = new AppFolder();
-                    FolderNamePage dialog = new FolderNamePage();
-                    ContentDialogResult result = await dialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        _createdFolder.Name = dialog.FolderName;
-                    }
-                    navFrame.Navigate(typeof(EditFolder), _createdFolder);
-                    break;
-                case "Remove":
-                    navFrame.Navigate(typeof(RemoveFolder));
-                    break;
-                default:
-                    break;
-            }
-        }
+  
         private async void CreateSpecialFolders(object sender, TappedRoutedEventArgs e)
         {
             if (PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().Any(x => x.Name == "Favorite") || PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().Any(x => x.Name == "Most Used"))
@@ -216,9 +205,13 @@ namespace appLauncher.Core.Pages
                     {
                         _createdFolder.Name = dialog.FolderName;
                     }
+                    showMessage.Show("Creating new folder", 1000);
+
                     navFrame.Navigate(typeof(EditFolder), _createdFolder);
                     break;
                 case "remove":
+                    showMessage.Show("Removing folder", 1000);
+
                     navFrame.Navigate(typeof(RemoveFolder));
                     break;
                 case "favorite":
@@ -393,6 +386,92 @@ namespace appLauncher.Core.Pages
         private void AppSettings_Tapped(object sender, TappedRoutedEventArgs e)
         {
             navFrame.Navigate(typeof (AppSettings));
+        }
+
+        private void AppSettings_Tapped_1(object sender, TappedRoutedEventArgs e)
+        {
+            showMessage.Show("Settings option selected", 1500);
+        }
+
+        private void AlphaAZ_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            PackageHelper.Apps.GetFilteredApps("alphaAZ");
+        }
+        private void AlphaZA_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            PackageHelper.Apps.GetFilteredApps("alphaZA");
+        }
+        private void DevAZ_Tapped(object sender,TappedRoutedEventArgs e)
+        {
+            PackageHelper.Apps.GetFilteredApps("devAZ");
+        }
+        private void DevZA_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            PackageHelper.Apps.GetFilteredApps("devZA");
+        }
+        private void Newest_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+        private void Oldest_Tapped(object sender,TappedRoutedEventArgs e)
+        {
+
+        }
+        private void MenuFlyoutItem_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var a = "test";
+        }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var a = "test";
+        }
+
+        private void back_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void allapps_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void settings_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ((AppBarButton)sender).Flyout.ShowAt((AppBarButton)sender);
+        }
+
+        private void Searchbox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            //Searchbox.Width = 100;
+            MainNavigation.OpenPaneLength = 150;
+            MainNavigation.IsPaneOpen = true;
+        }
+        private void Searchbox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            //Searchbox.Width = 50;
+            MainNavigation.OpenPaneLength = 50;
+            MainNavigation.IsPaneOpen = false;
+        }
+
+        private void menubutton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (MainNavigation.IsPaneOpen==true)
+            {
+                MainNavigation.IsPaneOpen = false;
+             //   scroller.Width= 50;
+            }
+            else
+            {
+                MainNavigation.IsPaneOpen = true;
+               // scroller.Width = 150;
+            }    
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

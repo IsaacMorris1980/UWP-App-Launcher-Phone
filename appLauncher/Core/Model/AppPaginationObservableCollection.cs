@@ -1,4 +1,5 @@
 ﻿using appLauncher.Core.CustomEvent;
+using appLauncher.Core.Enums;
 using appLauncher.Core.Extensions;
 using appLauncher.Core.Helpers;
 using appLauncher.Core.Interfaces;
@@ -116,7 +117,7 @@ namespace appLauncher.Core.Model
         }
         public void Search(string searchText)
         {
-            if (string.IsNullOrEmpty(searchText))
+            if (string.IsNullOrEmpty(searchText) || string.IsNullOrWhiteSpace(searchText))
             {
                 _searched = false;
                 PageChanged(new PageChangedEventArgs(SettingsHelper.totalAppSettings.LastPageNumber));
@@ -199,7 +200,7 @@ namespace appLauncher.Core.Model
                     }
                     originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "installNewest":
+                case "newest":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
                     appfolders = originalCollection.OfType<AppFolder>().ToList();
                     List<FinalTiles> TilesbyInstalledDate = apptiles.OrderBy(x => x.InstalledDate).ToList();
@@ -215,7 +216,7 @@ namespace appLauncher.Core.Model
                     }
                     originalCollection = new ObservableCollection<IApporFolder>(orderList);
                     break;
-                case "installOldest":
+                case "oldest":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
                     appfolders = originalCollection.OfType<AppFolder>().ToList();
                     List<FinalTiles> TilesbyInstalledDates = apptiles.OrderByDescending(x => x.InstalledDate).ToList();
