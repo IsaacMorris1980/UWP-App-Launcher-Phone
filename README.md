@@ -50,7 +50,7 @@ Latest Features Merged to Testing Branch and builds will be made from Testing br
 
 
 ## Features in development:
-• Parallax Wallpaper
+* Context menu on tiles
 
 • Localization
 
@@ -60,8 +60,7 @@ Latest Features Merged to Testing Branch and builds will be made from Testing br
 
 
 ## Features under Investigation
-
-* Context menu on tiles
+*  Parallax Wallpaper
   
 * Allow creating app folders without new screen
   
