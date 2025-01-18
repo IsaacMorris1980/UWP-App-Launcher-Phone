@@ -637,9 +637,22 @@ namespace appLauncher.Core.Pages
                     Frame.Navigate(typeof(FolderInfo), ((AppFolder)item));
                     return;
                 }
-
-
             }
+        }
+
+        private void EditFolder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var a = "test";
+        }
+
+        private void EditApp_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var b = 1;
+        }
+
+        private void EditFolder_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var b = 1;
         }
     }
 }

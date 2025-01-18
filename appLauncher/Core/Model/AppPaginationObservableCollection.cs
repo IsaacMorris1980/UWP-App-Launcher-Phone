@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
+using Windows.UI.Xaml.Input;
+
 namespace appLauncher.Core.Model
 {
     [Serializable]
@@ -20,10 +22,11 @@ namespace appLauncher.Core.Model
         private int _countPerPage = 1;
         private int _selectedPage = 0;
         private bool _searched = false;
+        private bool _filtered = false;
         private string _searchText = string.Empty;
         private ObservableCollection<IApporFolder> SearchList;
-
-        public AppPaginationObservableCollection(IEnumerable<IApporFolder> collection) : base(collection)
+        private ObservableCollection<IApporFolder> filterList;
+       public AppPaginationObservableCollection(IEnumerable<IApporFolder> collection) : base(collection)
         {
             _selectedPage = SettingsHelper.totalAppSettings.LastPageNumber;
             _countPerPage = SettingsHelper.totalAppSettings.AppsPerPage;
@@ -34,37 +37,39 @@ namespace appLauncher.Core.Model
             FirstPage.pageChanged += PageChanged;
             RecalculateThePageItems();
         }
-        public void RecalculateThePageItems()
+       public void RecalculateThePageItems()
         {
-
-
-            if (!_searched)
+            if((!_searched) || (!_filtered))
             {
-
-
-
                 ClearItems();
-                var listofApps = originalCollection.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
-
-                foreach (var item in listofApps)
+                List<IApporFolder> listofApps = originalCollection.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
+               foreach (IApporFolder item in listofApps)
                 {
 
                     base.Add(item);
                 }
             }
-            else
+            if(_searched)
             {
                 ClearItems();
 
-                var searchlist = SearchList.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
-                foreach (var item in searchlist)
+                List<IApporFolder> searchlist = SearchList.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
+                foreach (IApporFolder item in searchlist)
                 {
                     base.Add(item);
                 }
 
             }
+            if(_filtered)
+            {
+                ClearItems();
+              List<IApporFolder> filterlist = filterList.Skip(_selectedPage * _countPerPage).Take(_countPerPage).ToList();
+                foreach (FinalTiles item in filterlist)
+                {
+                    base.Add(item);
+                }
+            }         
             OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
-
         }
 
         public void AddFolder(AppFolder folder)
@@ -125,6 +130,7 @@ namespace appLauncher.Core.Model
             else
             {
                 _searched = true;
+                _filtered = false;
                 SearchList = new ObservableCollection<IApporFolder>(originalCollection.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList());
                 PageChanged(new PageChangedEventArgs(0));
             }
@@ -146,7 +152,12 @@ namespace appLauncher.Core.Model
         }
         public void GetFilteredApps(string selected)
         {
-
+            _searched = false;
+            _filtered = false;
+            if (string.IsNullOrEmpty(selected)||string.IsNullOrWhiteSpace(selected))
+            {
+                return;
+            }
             List<IApporFolder> orderList;
             List<FinalTiles> apptiles;
             List<AppFolder> appfolders;
@@ -158,7 +169,8 @@ namespace appLauncher.Core.Model
                     {
                         orderList[i].ListPos = i;
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
                     break;
                 case "alphaZA":
                     orderList = originalCollection.OrderByDescending(y => y.Name).ToList();
@@ -166,7 +178,8 @@ namespace appLauncher.Core.Model
                     {
                         orderList[i].ListPos = i;
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
                     break;
                 case "devAZ":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
@@ -182,7 +195,8 @@ namespace appLauncher.Core.Model
                             orderList[i].ListPos = i;
                         }
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
                     break;
                 case "devZA":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
@@ -198,7 +212,8 @@ namespace appLauncher.Core.Model
                             orderList[i].ListPos = i;
                         }
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
                     break;
                 case "newest":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
@@ -214,7 +229,8 @@ namespace appLauncher.Core.Model
                             orderList[i].ListPos = i;
                         }
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
                     break;
                 case "oldest":
                     apptiles = originalCollection.OfType<FinalTiles>().ToList();
@@ -230,10 +246,34 @@ namespace appLauncher.Core.Model
                             orderList[i].ListPos = i;
                         }
                     }
-                    originalCollection = new ObservableCollection<IApporFolder>(orderList);
+                    filterList = new ObservableCollection<IApporFolder>(orderList);
+                    _filtered = true;
+                    break;
+                case "favorite":
+                    List<AppFolder> allFolder = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> allApps = originalCollection.OfType<FinalTiles>().ToList();
+                    foreach  (AppFolder folder in allFolder)
+                    {
+                        allApps.AddRange(folder.FolderApps);
+                    }
+                    filterList =new ObservableCollection<IApporFolder>(allApps.Where(x => x.Favorite).ToList());
+                    _filtered = true;
+                    break;
+                case "used":
+                    List<AppFolder> allFolders = originalCollection.OfType<AppFolder>().ToList();
+                    List<FinalTiles> allApp = originalCollection.OfType<FinalTiles>().ToList();
+                    foreach (AppFolder folder in allFolders)
+                    {
+                        allApp.AddRange(folder.FolderApps);
+                    }
+                    filterList = new ObservableCollection<IApporFolder>(allApp.Where(x => x.LaunchedCount > 5).ToList());
+                    _filtered = true;
                     break;
                 default:
-                    return;
+                    _searched = true;
+                    _filtered = false;
+                    break;
+                   
             }
             RecalculateThePageItems();
         }

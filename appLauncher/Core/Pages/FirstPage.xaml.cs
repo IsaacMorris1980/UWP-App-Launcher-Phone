@@ -2,6 +2,7 @@
 using appLauncher.Core.Helpers;
 using appLauncher.Core.Model;
 
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 
 using System;
@@ -10,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -64,12 +66,12 @@ namespace appLauncher.Core.Pages
             PackageHelper.pageVariables = new PageChangingVariables();
             pageChanged += FirstPage_pageChanged;
             navFrame.Navigating += NavFrame_Navigating;
-            filters.Add("Apps A-Z");
-            filters.Add("Apps Z-A");
+            filters.Add("Name A-Z");
+            filters.Add("Name Z-A");
             filters.Add("Dev A-Z");
             filters.Add("Dev Z-A");
-            filters.Add("Installed Newest First");
-            filters.Add("Installed Oldest First");
+            filters.Add("Installed Newest");
+            filters.Add("Installed Oldest");
         }
         private void NavFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
@@ -115,6 +117,7 @@ namespace appLauncher.Core.Pages
         }
         private void AppsButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            PackageHelper.Apps.GetFilteredApps(string.Empty);
             NavFrame.Navigate(typeof(MainPage));
         }
         private void SettingsButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -131,7 +134,8 @@ namespace appLauncher.Core.Pages
         }
         private void Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ((FontIcon)sender).ContextFlyout.ShowAt((FontIcon)sender);
+        
+            MainNavigation.IsPaneOpen = !MainNavigation.IsPaneOpen;
         }
         private void Searchbox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -186,101 +190,34 @@ namespace appLauncher.Core.Pages
         }
         private void FilterAppsAndFolders(object sender, TappedRoutedEventArgs e)
         {
-          PackageHelper.Apps.GetFilteredApps(((MenuFlyoutItem)sender).Tag.ToString());
+           MainNavigation.IsPaneOpen = !MainNavigation.IsPaneOpen;
         }
-  
-        private async void CreateSpecialFolders(object sender, TappedRoutedEventArgs e)
+        private void CreateNewFolder(object sender, TappedRoutedEventArgs e)
         {
-            if (PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().Any(x => x.Name == "Favorite") || PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().Any(x => x.Name == "Most Used"))
-            {
-                return;
-            }
-            switch (((MenuFlyoutItem)sender).Tag)
-            {
-                case "new":
-                    AppFolder _createdFolder = new AppFolder();
-                    FolderNamePage dialog = new FolderNamePage();
-                    ContentDialogResult result = await dialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        _createdFolder.Name = dialog.FolderName;
-                    }
-                    showMessage.Show("Creating new folder", 1000);
-
-                    navFrame.Navigate(typeof(EditFolder), _createdFolder);
-                    break;
-                case "remove":
-                    showMessage.Show("Removing folder", 1000);
-
-                    navFrame.Navigate(typeof(RemoveFolder));
-                    break;
-                case "favorite":
-                    if (!PackageHelper.Apps.GetOriginalCollection().Any(x => x.Name == "Favorites"))
-                    {
-                        if (AnyFavorites())
-                        {
-                            AppFolder folder = new AppFolder()
-                            {
-                                Name = "Favorites",
-                                Description = "Favorited apps",
-                                ListPos = PackageHelper.Apps.GetOriginalCollection().Count - 1,
-                                InstalledDate = System.DateTime.Now
-                            };
-
-                            PackageHelper.Apps.AddFolder(folder);
-                            PackageHelper.Apps.RecalculateThePageItems();
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        AppFolder favorite = (AppFolder)PackageHelper.Apps.GetOriginalCollection().First(x => x.Name == "Favorites");
-                        navFrame.Navigate(typeof(FolderView), favorite);
-                    }
-
-                    showMessage.Show("No apps selected as favorite", 2000);
-                    break;
-                case "used":
-                    if (AnyMostUsed())
-                    {
-                        AppFolder usedfolder = new AppFolder()
-                        {
-                            Name = "Most Used",
-                            Description = "Apps Launched over 5 times using this app",
-                            ListPos = PackageHelper.Apps.GetOriginalCollection().Count - 1,
-                            InstalledDate = DateTime.Now
-                        };
-                        PackageHelper.Apps.AddFolder(usedfolder);
-                        PackageHelper.Apps.RecalculateThePageItems();
-                        break;
-                    }
-                    showMessage.Show("No apps launched more than 5 times", 1000);
-                    break;
-                default:
-                    return;
-            }
+            AppFolder _createdFolder = new AppFolder();
+            FolderNamePage dialog = new FolderNamePage();
+            showMessage.Show("Creating new folder", 1000);
+            navFrame.Navigate(typeof(EditFolder), _createdFolder);
         }
-        private bool AnyFavorites()
+        private void RemoveFolder(object sender, TappedRoutedEventArgs e)
         {
-            var apps = PackageHelper.Apps.GetOriginalCollection().OfType<FinalTiles>().ToList();
-            var folders = PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().ToList();
-            foreach (var item in folders)
-            {
-                apps.AddRange(item.FolderApps.ToList());
-            }
-            bool isfavorite = apps.Any(x => x.Favorite == true);
-            return isfavorite;
+            NavFrame.Navigate(typeof(RemoveFolder));
         }
-        private bool AnyMostUsed()
+        private void FilterFavorites(object sender, TappedRoutedEventArgs e)
         {
-            var apps = PackageHelper.Apps.GetOriginalCollection().OfType<FinalTiles>().ToList();
-            var folders = PackageHelper.Apps.GetOriginalCollection().OfType<AppFolder>().ToList();
-            foreach (var item in folders)
-            {
-                apps.AddRange(item.FolderApps.ToList());
-            }
-            bool mostusded = apps.Any(x => x.LaunchedCount > 5);
-            return mostusded;
+            PackageHelper.Apps.GetFilteredApps("favorite");
+        }
+        private void FilterMostUsed(object sender, TappedRoutedEventArgs e)
+        {
+            PackageHelper.Apps.GetFilteredApps("used");
+        }    
+        private void InstallApp(object sender, TappedRoutedEventArgs e)
+        {
+            navFrame.Navigate(typeof(InstallApps));
+        }
+        private void RemoveApp(object sender, TappedRoutedEventArgs e)
+        {
+            navFrame.Navigate(typeof(RemoveApps));
         }
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
@@ -444,9 +381,7 @@ namespace appLauncher.Core.Pages
 
         private void Searchbox_GotFocus(object sender, RoutedEventArgs e)
         {
-            //Searchbox.Width = 100;
-            MainNavigation.OpenPaneLength = 150;
-            MainNavigation.IsPaneOpen = true;
+            ((TextBox)sender).Text = string.Empty;
         }
         private void Searchbox_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -471,7 +406,30 @@ namespace appLauncher.Core.Pages
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            switch (((ComboBox)sender).SelectedIndex)
+            {
+                case 0:
+                    PackageHelper.Apps.GetFilteredApps("alphaAZ");
+                    break;
+                case 1:
+                    PackageHelper.Apps.GetFilteredApps("alphaZA");
+                    break;
+                case 2:
+                    PackageHelper.Apps.GetFilteredApps("devAZ");
+                    break;
+                case 3:
+                    PackageHelper.Apps.GetFilteredApps("devZA");
+                    break;
+                case 4:
+                    PackageHelper.Apps.GetFilteredApps("newest");
+                    break;
+                case 5:
+                    PackageHelper.Apps.GetFilteredApps("oldest");
+                    break;
+                default:
+                    break;
+            }
+            MainNavigation.IsPaneOpen = false;
         }
     }
 }

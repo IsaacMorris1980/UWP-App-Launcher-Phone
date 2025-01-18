@@ -9,11 +9,11 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" Height="400" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <RelativePanel HorizontalAlignment="Stretch" Height="100" Margin="10"
                       VerticalAlignment="Stretch">
 
-                <TextBlock 
+                <TextBox 
                FontSize="36"
                FontWeight="Bold"
                Margin="16,20,0,16"
@@ -21,7 +21,7 @@
                Foreground="{x:Bind helper:SettingsHelper.totalAppSettings.AppForegroundColorBrush}"
                RelativePanel.AlignHorizontalCenterWithPanel="True"/>
             </RelativePanel>
-            <ScrollViewer Height="400" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Stretch">
                      <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Vertical">
@@ -37,11 +37,12 @@
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Canvas Grid.Column="0" Background="{x:Bind LogoBrush}" Height="50" Width="50" />
-                                                <TextBlock Grid.Column="1" Text="{x:Bind Name}" 
+                                                <TextBox Grid.Column="1" Text="{x:Bind Name}" 
      VerticalAlignment="Center"
      Margin="4,0,0,0"
      FontSize="16" 
 TextWrapping="Wrap"
+                                                         TextChanged="TextBox_TextChanged"
      Foreground="{x:Bind TextBrush}"/>
                                             </Grid>
                                         </DataTemplate>

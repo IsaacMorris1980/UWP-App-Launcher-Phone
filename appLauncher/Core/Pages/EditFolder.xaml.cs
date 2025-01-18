@@ -111,5 +111,10 @@ namespace appLauncher.Core.Pages
                 this.UnloadObject(AllTilesText);
             }
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

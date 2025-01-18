@@ -17,6 +17,7 @@
             <RelativePanel Width="64" Height="84" Margin="12" Background="Blue" RightTapped="RelativePanel_RightTapped" >
                 <RelativePanel.ContextFlyout>
                     <MenuFlyout>
+                        <MenuFlyoutItem x:Name="EditFolder" Text="Edit Folder" PointerPressed="EditFolder_PointerPressed" Tapped="EditFolder_Tapped" />
                         <MenuFlyoutItem x:Name="Edit" Text="Edit" Tapped="Edit_Tapped" />
                         <MenuFlyoutItem x:Name="Info" Text="Info" Tapped="Info_Tapped" />
                     </MenuFlyout>
@@ -38,6 +39,7 @@
             <RelativePanel Width="64" Height="84" Margin="12" RightTapped="RelativePanel_RightTapped" Background="{x:Bind BackBrush}">
                 <RelativePanel.ContextFlyout>
                     <MenuFlyout>
+                        <MenuFlyoutItem x:Name="EditApp" Text="Edit App" Tapped="EditApp_Tapped" />
                         <MenuFlyoutItem x:Name="Edit" Text="Edit" Tapped="Edit_Tapped" />
                         <MenuFlyoutItem x:Name="Info" Text="Info" Tapped="Info_Tapped" />
                     </MenuFlyout>
@@ -56,7 +58,7 @@
             </RelativePanel>
         </DataTemplate>
         <selectors:TileorFolderTemplateSelector x:Key="ApporFolderSelector" FolderTemplate="{StaticResource FolderTemplate}" TileTemplate="{StaticResource AppTemplate}" />
-       
+
     </Page.Resources>
     <Grid 
           Name="rootGrid" HorizontalAlignment="Stretch"

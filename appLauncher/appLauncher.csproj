@@ -138,6 +138,9 @@
     <Compile Include="Core\Pages\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Pages\AllApps.xaml.cs">
+      <DependentUpon>AllApps.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Pages\AppBackgroundSettings.xaml.cs">
       <DependentUpon>AppBackgroundSettings.xaml</DependentUpon>
     </Compile>
@@ -254,6 +257,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Core\Pages\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Pages\AllApps.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
