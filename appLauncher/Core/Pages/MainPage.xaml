@@ -15,14 +15,7 @@
      <Page.Resources>
          <DataTemplate x:Key="FolderTemplate" x:DataType="models:AppFolder">
             <RelativePanel Width="64" Height="84" Margin="12" Background="Blue" RightTapped="RelativePanel_RightTapped" >
-                <RelativePanel.ContextFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem x:Name="EditFolder" Text="Edit Folder" PointerPressed="EditFolder_PointerPressed" Tapped="EditFolder_Tapped" />
-                        <MenuFlyoutItem x:Name="Edit" Text="Edit" Tapped="Edit_Tapped" />
-                        <MenuFlyoutItem x:Name="Info" Text="Info" Tapped="Info_Tapped" />
-                    </MenuFlyout>
-                </RelativePanel.ContextFlyout>
-                <Canvas x:Name="Logo" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" Width="50" Height="50" Background="{x:Bind BackBrush}" />
+                      <Canvas x:Name="Logo" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" Width="50" Height="50" Background="{x:Bind BackBrush}" />
                         <TextBlock Name="appName" Text="{x:Bind Name}" 
                     FontSize="12" 
                     TextAlignment="Left" 
@@ -37,13 +30,6 @@
         </DataTemplate>
         <DataTemplate x:Key="AppTemplate" x:DataType="models:FinalTiles">
             <RelativePanel Width="64" Height="84" Margin="12" RightTapped="RelativePanel_RightTapped" Background="{x:Bind BackBrush}">
-                <RelativePanel.ContextFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem x:Name="EditApp" Text="Edit App" Tapped="EditApp_Tapped" />
-                        <MenuFlyoutItem x:Name="Edit" Text="Edit" Tapped="Edit_Tapped" />
-                        <MenuFlyoutItem x:Name="Info" Text="Info" Tapped="Info_Tapped" />
-                    </MenuFlyout>
-                </RelativePanel.ContextFlyout>
                 <Canvas x:Name="AppLogo" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignHorizontalCenterWithPanel="True" Width="50" Height="50" Background="{x:Bind LogoBrush}" />
                 <TextBlock Name="appName" Text="{x:Bind Name}" 
              FontSize="12" 

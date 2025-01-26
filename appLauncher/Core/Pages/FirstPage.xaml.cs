@@ -410,7 +410,7 @@ namespace appLauncher.Core.Pages
             {
                 case 0:
                     PackageHelper.Apps.GetFilteredApps("alphaAZ");
-                    break;
+                    break;            
                 case 1:
                     PackageHelper.Apps.GetFilteredApps("alphaZA");
                     break;
@@ -430,6 +430,11 @@ namespace appLauncher.Core.Pages
                     break;
             }
             MainNavigation.IsPaneOpen = false;
+        }
+        public static void rightclick(object sender)
+        {
+            var a =(FirstPage)FirstPage.navFrame.Parent;
+
         }
     }
 }

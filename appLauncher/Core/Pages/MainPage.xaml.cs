@@ -654,5 +654,13 @@ namespace appLauncher.Core.Pages
         {
             var b = 1;
         }
+        public static void FolderObject(object sender,RightTappedRoutedEventArgs e)
+        {
+
+        }
+        public static void AppObject(object sender,RightTappedRoutedEventArgs e)
+        {
+            
+        }
     }
 }
